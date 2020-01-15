@@ -1,4 +1,4 @@
-# cubic-bezier
+# ts
 
 ## Project setup
 ```

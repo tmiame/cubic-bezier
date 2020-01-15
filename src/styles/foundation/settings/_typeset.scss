@@ -1,0 +1,99 @@
+@charset 'UTF-8';
+
+// stylelint-disable at-rule-empty-line-before
+
+//
+// @mixin Type Set
+// ===============================
+//
+// use: @include TYPESET('body-xsmall')
+// use: @include TYPESET('body-small')
+// use: @include TYPESET('body-text')
+// use: @include TYPESET('body-medium')
+// use: @include TYPESET('body-large')
+// use: @include TYPESET('heading', '01')
+// use: @include TYPESET('heading', '02') = 30px
+// use: @include TYPESET('heading', '03') = 24px
+// use: @include TYPESET('heading', '04') = 20px
+// use: @include TYPESET('heading', '05') = 16px
+// use: @include TYPESET('heading', '06') = 14px
+//
+
+@mixin TYPESET($fontsize: normal, $tone: '01', $diff: 1) {
+  // 10px
+  @if $fontsize == 'body-xsmall' {
+    font-size: ((1rem * 0.65) * $diff);
+
+    @include FR_MQ_ONLY(QS) {
+      font-size: ((1rem * 0.75) * $diff);
+    }
+  }
+
+  // 12px
+  @else if $fontsize == 'body-small' {
+    font-size: ((1rem * 0.75) * $diff);
+
+    @include FR_MQ_ONLY(QS) {
+      font-size: ((1rem * 0.85) * $diff);
+    }
+  }
+
+  // 14px
+  @else if $fontsize == 'body-text-short' or $fontsize == 'body-short' {
+    font-size: ((1rem * 0.875) * $diff);
+
+    @include FR_MQ_ONLY(QS) {
+      font-size: ((1rem * 0.95) * $diff);
+    }
+  }
+
+  // 16px
+  @else if $fontsize == 'body-text' {
+    font-size: ((1rem * 1) * $diff);
+  }
+
+  // 18px
+  @else if $fontsize == 'body-medium' {
+    font-size: ((1rem * 1.125) * $diff);
+  }
+
+  // 20px
+  @else if $fontsize == 'body-large' {
+    font-size: ((1rem * 1.25) * $diff);
+  }
+
+  //
+  // Heading
+  //
+  @else if $fontsize == 'heading' and $tone == '06' {
+    font-size: ((1rem * 1.375) * $diff);
+    font-weight: var(--font-weight-black);
+  }
+  @else if $fontsize == 'heading' and $tone == '05' {
+    font-size: ((1rem * 1.5) * $diff);
+    font-weight: var(--font-weight-black);
+  }
+  @else if $fontsize == 'heading' and $tone == '04' {
+    font-size: ((1rem * 1.625) * $diff);
+    font-weight: var(--font-weight-black);
+  }
+  @else if $fontsize == 'heading' and $tone == '03' {
+    font-size: ((1rem * 2.125) * $diff);
+    font-weight: var(--font-weight-black);
+  }
+  @else if $fontsize == 'heading' and $tone == '02' {
+    font-size: ((1rem * 2.875) * $diff);
+    font-weight: var(--font-weight-black);
+  }
+  @else if $fontsize == 'heading' and $tone == '01' {
+    font-size: ((1rem * 3.625) * $diff);
+    font-weight: var(--font-weight-black);
+  }
+
+  //
+  // Line-height
+  //
+  @if $fontsize == 'heading' {
+    line-height: var(--line-height-headings);
+  }
+}

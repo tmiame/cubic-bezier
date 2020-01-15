@@ -1,0 +1,65 @@
+@charset 'UTF-8';
+
+//
+// @mixin - FR_ASPECT_RATIO()
+//
+// https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
+// https://www.andyshora.com/css-image-container-padding-hack.html
+// https://github.com/verlok/lazyload#occupy-vertical-space-and-maintain-ratio
+//
+
+@mixin FR_ASPECT_RATIO($width, $height, $content: null) {
+  position: relative;
+
+  &::before {
+    display: block;
+    content: '';
+    width: 100%;
+    padding-top: ($height / $width) * 100%;
+  }
+
+  @if $content != null {
+    > #{$content} {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  }
+}
+
+// [html]
+// <div class="test">
+//   <!-- via IFRAME -->
+//   <iframe class="content" width="560" height="315" src="https://www.youtube-nocookie.com/"></iframe>
+//
+//   <!-- via CONTENT -->
+//   <div class="content">
+//     <span>16:9</span>
+//   </div>
+//
+//   <!-- via IMAGE -->
+//   <img class="content" src="image1.jpg">
+// </div>
+
+// [scss]
+// .test {
+//   @include FR_ASPECT_RATIO(16, 9, '.content');
+//   background-color: #00ff00;
+//   width: 100%;
+//   overflow: hidden;
+//   .content {
+//     // ...
+//   }
+//   // 埋め込みビデオの場合
+//   iframe {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     bottom: 0;
+//     right: 0;
+//     width: 100% !important;
+//     height: 100% !important;
+//   }
+// }

@@ -1,0 +1,28 @@
+@charset 'UTF-8';
+
+//
+// @mixin - FR_HOVER()
+//
+
+@mixin FR_HOVER() {
+  // for ie
+  @media all and (-ms-high-contrast: none) {
+    &:hover {
+      @content;
+    }
+  }
+
+  // for pc
+  @media (any-pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+
+  // for sp
+  @media (any-pointer: coarse) {
+    &:active {
+      @content;
+    }
+  }
+}

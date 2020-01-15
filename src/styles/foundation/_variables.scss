@@ -1,0 +1,51 @@
+@charset 'UTF-8';
+
+// stylelint-disable indentation
+
+//
+// foundation - variables
+//
+
+$VAR_PALETTES: (
+  breakpoint: (
+    XS: 350px,
+    S: 400px,
+    XT: 700px,
+    QS: 700px,
+    T: 920px,
+    QT: 920px,
+    M: 1200px,
+    L: 1580px,
+    XL: 1904px
+  )
+);
+
+@function VAR($var, $tone: default) {
+  @return map-get(map-get($VAR_PALETTES, $var), $tone);
+}
+
+// Spacing
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: 4px,
+  2: 8px,
+  3: 12px,
+  4: 16px,
+  5: 20px
+);
+
+// Sizing Scale
+$sizeUnit: 0.625rem;
+$sizeUnits: (
+  10: ($sizeUnit * 1),
+  15: ($sizeUnit * 1.5),
+  20: ($sizeUnit * 2),
+  25: ($sizeUnit * 2.5),
+  30: ($sizeUnit * 3),
+  40: ($sizeUnit * 4),
+  60: ($sizeUnit * 6),
+  80: ($sizeUnit * 8),
+  100: ($sizeUnit * 10),
+  120: ($sizeUnit * 12)
+);

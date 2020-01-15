@@ -1,0 +1,17 @@
+/**
+ * import.scss
+
+ * @example
+ * <template>
+ * </template>
+ * <script>
+ * </script>
+ * <style lang="scss" scoped>
+ * @import '@/styles/import.scss';
+ * </style>
+ */
+
+@import 'foundation/_variables.scss';
+@import 'foundation/mixins/_hover.scss';
+@import 'foundation/mixins/_media-queries.scss';
+@import 'foundation/settings/_typeset.scss';

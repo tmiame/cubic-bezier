@@ -1,0 +1,217 @@
+@charset 'UTF-8';
+
+// stylelint-disable rule-empty-line-before
+
+//
+// @utility - Margin and Padding
+// @description -
+// ===========================================
+//
+
+@each $breakpoint in map-keys(map-get($VAR_PALETTES, breakpoint)) {
+  @if $breakpoint != XL {
+    @include FR_MQ_ONLY($breakpoint) {
+      $infix: to-lower-case($breakpoint);
+
+      @each $prop, $abbrev in (margin: m, padding: p) {
+        @each $size, $length in $spacers {
+          .u-#{$abbrev}-#{$infix}-#{$size} {
+            #{$prop}: $length !important;
+          }
+          .u-#{$abbrev}t-#{$infix}-#{$size},
+          .u-#{$abbrev}y-#{$infix}-#{$size} {
+            #{$prop}-top: $length !important;
+          }
+          .u-#{$abbrev}r-#{$infix}-#{$size},
+          .u-#{$abbrev}x-#{$infix}-#{$size} {
+            #{$prop}-right: $length !important;
+          }
+          .u-#{$abbrev}b-#{$infix}-#{$size},
+          .u-#{$abbrev}y-#{$infix}-#{$size} {
+            #{$prop}-bottom: $length !important;
+          }
+          .u-#{$abbrev}l-#{$infix}-#{$size},
+          .u-#{$abbrev}x-#{$infix}-#{$size} {
+            #{$prop}-left: $length !important;
+          }
+        }
+      }
+
+      // Negative margins (e.g., where `.mb-n1` is negative version of `.mb-1`)
+      @each $size, $length in $spacers {
+        @if $size != 0 {
+          .u-m-#{$infix}-n#{$size} {
+            margin: -$length !important;
+          }
+          .u-mt-#{$infix}-n#{$size},
+          .u-my-#{$infix}-n#{$size} {
+            margin-top: -$length !important;
+          }
+          .u-mr-#{$infix}-n#{$size},
+          .u-mx-#{$infix}-n#{$size} {
+            margin-right: -$length !important;
+          }
+          .u-mb-#{$infix}-n#{$size},
+          .u-my-#{$infix}-n#{$size} {
+            margin-bottom: -$length !important;
+          }
+          .u-ml-#{$infix}-n#{$size},
+          .u-mx-#{$infix}-n#{$size} {
+            margin-left: -$length !important;
+          }
+        }
+      }
+
+      // Some special margin utils
+      .u-m-#{$infix}-auto {
+        margin: auto !important;
+      }
+      .u-mt-#{$infix}-auto,
+      .u-my-#{$infix}-auto {
+        margin-top: auto !important;
+      }
+      .u-mr-#{$infix}-auto,
+      .u-mx-#{$infix}-auto {
+        margin-right: auto !important;
+      }
+      .u-mb-#{$infix}-auto,
+      .u-my-#{$infix}-auto {
+        margin-bottom: auto !important;
+      }
+      .u-ml-#{$infix}-auto,
+      .u-mx-#{$infix}-auto {
+        margin-left: auto !important;
+      }
+    }
+  }
+
+  @else {
+    @each $prop, $abbrev in (margin: m, padding: p) {
+      @each $size, $length in $spacers {
+        .u-#{$abbrev}-#{$size} {
+          #{$prop}: $length !important;
+        }
+        .u-#{$abbrev}t-#{$size},
+        .u-#{$abbrev}y-#{$size} {
+          #{$prop}-top: $length !important;
+        }
+        .u-#{$abbrev}r-#{$size},
+        .u-#{$abbrev}x-#{$size} {
+          #{$prop}-right: $length !important;
+        }
+        .u-#{$abbrev}b-#{$size},
+        .u-#{$abbrev}y-#{$size} {
+          #{$prop}-bottom: $length !important;
+        }
+        .u-#{$abbrev}l-#{$size},
+        .u-#{$abbrev}x-#{$size} {
+          #{$prop}-left: $length !important;
+        }
+      }
+    }
+
+    // Negative margins (e.g., where `.mb-n1` is negative version of `.mb-1`)
+    @each $size, $length in $spacers {
+      @if $size != 0 {
+        .u-m-n#{$size} {
+          margin: -$length !important;
+        }
+        .u-mt-n#{$size},
+        .u-my-n#{$size} {
+          margin-top: -$length !important;
+        }
+        .u-mr-n#{$size},
+        .u-mx-n#{$size} {
+          margin-right: -$length !important;
+        }
+        .u-mb-n#{$size},
+        .u-my-n#{$size} {
+          margin-bottom: -$length !important;
+        }
+        .u-ml-n#{$size},
+        .u-mx-n#{$size} {
+          margin-left: -$length !important;
+        }
+      }
+    }
+
+    // Some special margin utils
+    .u-m-auto {
+      margin: auto !important;
+    }
+    .u-mt-auto,
+    .u-my-auto {
+      margin-top: auto !important;
+    }
+    .u-mr-auto,
+    .u-mx-auto {
+      margin-right: auto !important;
+    }
+    .u-mb-auto,
+    .u-my-auto {
+      margin-bottom: auto !important;
+    }
+    .u-ml-auto,
+    .u-mx-auto {
+      margin-left: auto !important;
+    }
+  }
+}
+
+@each $breakpoint in map-keys(map-get($VAR_PALETTES, breakpoint)) {
+  @if $breakpoint != XL {
+    @include FR_MQ_ONLY($breakpoint) {
+      $infix: to-lower-case($breakpoint);
+
+      @each $prop, $abbrev in (margin: m, padding: p) {
+        @each $size, $length in $sizeUnits {
+          .u-size-#{$abbrev}-#{$infix}-#{$size} {
+            #{$prop}: $length !important;
+          }
+          .u-size-#{$abbrev}t-#{$infix}-#{$size},
+          .u-size-#{$abbrev}y-#{$infix}-#{$size} {
+            #{$prop}-top: $length !important;
+          }
+          .u-size-#{$abbrev}r-#{$infix}-#{$size},
+          .u-size-#{$abbrev}x-#{$infix}-#{$size} {
+            #{$prop}-right: $length !important;
+          }
+          .u-size-#{$abbrev}b-#{$infix}-#{$size},
+          .u-size-#{$abbrev}y-#{$infix}-#{$size} {
+            #{$prop}-bottom: $length !important;
+          }
+          .u-size-#{$abbrev}l-#{$infix}-#{$size},
+          .u-size-#{$abbrev}x-#{$infix}-#{$size} {
+            #{$prop}-left: $length !important;
+          }
+        }
+      }
+    }
+  }
+
+  @else {
+    @each $prop, $abbrev in (margin: m, padding: p) {
+      @each $size, $length in $sizeUnits {
+        .u-size-#{$abbrev}-#{$size} {
+          #{$prop}: $length !important;
+        }
+        .u-size-#{$abbrev}t-#{$size},
+        .u-size-#{$abbrev}y-#{$size} {
+          #{$prop}-top: $length !important;
+        }
+        .u-size-#{$abbrev}r-#{$size},
+        .u-size-#{$abbrev}x-#{$size} {
+          #{$prop}-right: $length !important;
+        }
+        .u-size-#{$abbrev}b-#{$size},
+        .u-size-#{$abbrev}y-#{$size} {
+          #{$prop}-bottom: $length !important;
+        }
+        .u-size-#{$abbrev}l-#{$size},
+        .u-size-#{$abbrev}x-#{$size} {
+          #{$prop}-left: $length !important;
+        }
+      }
+    }
+  }
+}
