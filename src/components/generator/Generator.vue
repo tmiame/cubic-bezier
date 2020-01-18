@@ -2,7 +2,7 @@
   <div
     class="preview"
     ref="preview"
-    :class="{ '--grabbing': grabbing }"
+    :class="[{ '--grabbing': grabbing }, `--type-${type}`]"
     @touchmove.prevent
   >
     <svg
@@ -130,40 +130,49 @@ import {
   reactive,
   onMounted,
   onUnmounted,
-  Ref as RefType,
-  SetupContext
+  Ref as RefType
 } from '@vue/composition-api'
+import { DEFAULT_CUBIC } from '@/constants'
+import { TCubic, TPoint2D } from '@/types'
 
-import { TCubic, TPoint2D } from './types'
+enum EGeneratorType {
+  current = 'current',
+  compare = 'compare'
+}
 
-type PropType = {
+type TProps = {
   size: number,
+  type: EGeneratorType,
   cubicBezierX: TCubic,
   compareCubicBezier: TCubic
 }
 
-export default createComponent({
+export default createComponent<TProps>({
   name: 'Generator',
   props: {
     size: {
       type: Number,
       default: 500
     },
+    type: {
+      type: String as () => EGeneratorType,
+      default: EGeneratorType.current
+    },
     cubicBezierX: {
       type: Array,
+      required: true,
       default () {
-        return [1, 0, 0, 1]
+        return DEFAULT_CUBIC
       }
     },
     compareCubicBezier: {
       type: Array,
       default () {
-        return [1, 0, 0, 1]
+        return DEFAULT_CUBIC
       }
     }
   },
-  setup (props:PropType, { root: { $store } }:SetupContext) {
-    const store = $store.generatorStore
+  setup (props, { emit }) {
     const grabbing:RefType<boolean> = ref(false)
     const grabbingIndex:RefType<number> = ref(0)
     const preview:RefType<HTMLElement|null> = ref(null)
@@ -244,7 +253,7 @@ export default createComponent({
         normalize(props.size - newPath[2].y)
       ]
 
-      store.actions.updateCubicBezier(newCubicBezier)
+      emit('input', newCubicBezier)
     }
 
     onMounted(() => {
@@ -357,7 +366,7 @@ svg {
     stroke: rgba(255,255,255,0.8);
   }
 
-  &.-compare {
+  :not(.--type-compare) &.-compare {
     stroke: rgba(0,0,0,0.3);
     stroke-width: 2;
     stroke-linecap: round;
@@ -365,6 +374,30 @@ svg {
 
     html[dark] & {
       stroke: rgba(255,255,255,0.3);
+    }
+  }
+
+  .--type-compare & {
+    fill: none;
+    stroke: rgba(0,0,0,0.8);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 10px;
+
+    html[dark] & {
+      stroke: rgba(255,255,255,0.8);
+    }
+  }
+
+  .--type-compare &.-compare {
+    fill: none;
+    stroke: rgba(0,0,0,0.25);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 0;
+
+    html[dark] & {
+      stroke: rgba(255,255,255,0.25);
     }
   }
 }

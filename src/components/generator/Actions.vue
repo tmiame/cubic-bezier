@@ -7,9 +7,12 @@
       Copy
     </Button>
 
-    <!-- <Button type="button" fab class="u-ml-auto u-mr-0">
-      <CarbonIcon name="settings-adjust" />
-    </Button> -->
+    <Button type="button" class="u-ml-auto" @click.native="onCompareEdit">
+      <template #beforeIcon>
+        <CarbonIcon name="compare" />
+      </template>
+      Compare
+    </Button>
 
     <FDialog v-model="dialog">
       <CopyDialog @close="onCopyDialogClose" />
@@ -20,28 +23,38 @@
 <script lang="ts">
 import {
   createComponent,
-  ref,
-  watch,
-  Ref as RefType,
-  SetupContext
+  ref
 } from '@vue/composition-api'
 
 import FDialog from '@/components/flexible/FDialog.vue'
 import CopyDialog from '@/components/generator/CopyDialog.vue'
 import Button from '@/components/base/Button.vue'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
+import { DEFAULT_CUBIC } from '@/constants'
+import { TCubic } from '@/types'
 
-export default createComponent({
+type TProps = {
+  cubicBezier: TCubic
+}
+
+export default createComponent<TProps>({
   name: 'GeneratorActions',
+  props: {
+    cubicBezier: {
+      type: Array,
+      required: true,
+      default () {
+        return DEFAULT_CUBIC
+      }
+    }
+  },
   components: {
     FDialog,
     CopyDialog,
     Button,
     CarbonIcon
   },
-  setup (props, { root: { $store } }:SetupContext) {
-    const store = $store.generatorStore
-    const cubicBezier = store.getters.cubicBezier
+  setup ({ cubicBezier }, { emit }) {
     const dialog = ref(false)
 
     const onOpenDialog = () => {
@@ -52,11 +65,15 @@ export default createComponent({
       dialog.value = false
     }
 
+    const onCompareEdit = () => {
+      emit('compare-edit')
+    }
+
     return {
       dialog,
       onOpenDialog,
       onCopyDialogClose,
-      cubicBezier
+      onCompareEdit
     }
   }
 })

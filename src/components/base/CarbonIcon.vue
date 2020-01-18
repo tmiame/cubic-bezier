@@ -23,6 +23,7 @@ import IconUnknownFilled from '@carbon/icons-vue/es/unknown--filled/32'
 import IconErrorFilled from '@carbon/icons-vue/es/error--filled/32'
 import IconDraw from '@carbon/icons-vue/es/draw/32'
 import IconLaunch from '@carbon/icons-vue/es/launch/32'
+import IconCompare from '@carbon/icons-vue/es/compare/32'
 
 const icons = {
   'home': IconHome,
@@ -38,7 +39,8 @@ const icons = {
   'status-warning': IconWarningAltFilled,
   'status-unknown': IconUnknownFilled,
   'draw': IconDraw,
-  'launch': IconLaunch
+  'launch': IconLaunch,
+  'compare': IconCompare
 }
 
 export default {

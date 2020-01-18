@@ -1,12 +1,50 @@
 <template>
   <div class="s-view">
     <div class="s-view_generator">
-      <Output class="s-view_generator_topbar" :cubicBezier="cubicBezier"/>
-      <div class="s-view_generator_generator">
-        <Generator :cubicBezierX="cubicBezier" :compareCubicBezier="compareCubicBezier" />
-      </div>
-      <Actions class="s-view_generator_actions" :cubicBezier="cubicBezier"/>
-      <GeneratorCompare class="s-view_compareView" />
+      <template v-if="editorType === 'current'">
+        <Output
+          class="s-view_generator_topbar"
+          :cubicBezier="cubicBezier"
+          @input="onUpdateCubicBezier"
+        />
+        <div class="s-view_generator_generator">
+          <Generator
+            type="current"
+            :cubicBezierX="cubicBezier"
+            :compareCubicBezier="compareCubicBezier"
+            @input="onUpdateCubicBezier"
+          />
+        </div>
+        <Actions
+          class="s-view_generator_actions"
+          :cubicBezier="cubicBezier"
+          @compare-edit="onEditCompare"
+        />
+      </template>
+      <template v-else>
+        <Output
+          class="s-view_generator_topbar"
+          :cubicBezier="compareCubicBezier"
+          @input="onUpdateCompareCubicBezier"
+        />
+        <div class="s-view_generator_generator">
+          <Generator
+            type="compare"
+            :cubicBezierX="compareCubicBezier"
+            :compareCubicBezier="cubicBezier"
+            @input="onUpdateCompareCubicBezier"
+          />
+        </div>
+        <Actions
+          class="s-view_generator_actions"
+          :cubicBezier="compareCubicBezier"
+          @compare-edit="onEditCompare"
+        />
+        <GeneratorCompare
+          class="s-view_compareView"
+          @edit="onEditCompare"
+        />
+      </template>
     </div>
     <Preview class="s-view_secondaryView" :cubicBezier="cubicBezier" :compareCubicBezier="compareCubicBezier" />
   </div>
@@ -16,11 +54,9 @@
 import {
   createComponent,
   watch,
-  inject,
-  SetupContext
+  SetupContext,
+  ref
 } from '@vue/composition-api'
-
-import { THEME_SYMBOL, THEME_DEFAULT } from '@/constants'
 
 import Generator from '@/components/generator/Generator.vue'
 import GeneratorCompare from '@/components/generator/Compare.vue'
@@ -28,6 +64,7 @@ import Preview from '@/components/preview/Preview.vue'
 import Output from '@/components/generator/Output.vue'
 import Actions from '@/components/generator/Actions.vue'
 import useReplaceHistory from '@/plugins/replaceHistory'
+import { TCubic } from '@/types'
 
 export default createComponent({
   name: 'Home',
@@ -39,10 +76,10 @@ export default createComponent({
     Actions
   },
   setup (props, { root }:SetupContext) {
-    const theme = inject(THEME_SYMBOL, THEME_DEFAULT)
     const store = root.$store.generatorStore
     const cubicBezier = store.getters.cubicBezier
     const compareCubicBezier = store.getters.compareCubicBezier
+    const editorType = ref('current')
     const { onReplaceState, getURLHash } = useReplaceHistory()
 
     const getInitURLHash = () :void => {
@@ -58,14 +95,29 @@ export default createComponent({
 
     getInitURLHash()
 
+    const onUpdateCubicBezier = (value:TCubic) => {
+      store.actions.updateCubicBezier(value)
+    }
+
+    const onUpdateCompareCubicBezier = (value:TCubic) => {
+      store.actions.updateCompareCubicBezier(value)
+    }
+
+    const onEditCompare = () => {
+      editorType.value = editorType.value === 'compare' ? 'current' : 'compare'
+    }
+
     watch(() => cubicBezier.value, (newVal) => {
       onReplaceState(newVal)
     })
 
     return {
-      theme,
+      editorType,
       cubicBezier,
-      compareCubicBezier
+      compareCubicBezier,
+      onUpdateCubicBezier,
+      onUpdateCompareCubicBezier,
+      onEditCompare
     }
   }
 })
