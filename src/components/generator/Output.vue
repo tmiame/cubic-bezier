@@ -90,8 +90,8 @@ export default createComponent<TProps>({
       }
     }
   },
-  setup ({ cubicBezier }, { emit }) {
-    const cubicBezierEditable = ref(cubicBezier)
+  setup (props, { emit }) {
+    const cubicBezierEditable = ref(props.cubicBezier)
 
     const p1:RefType<HTMLElement|null> = ref(null)
     const p2:RefType<HTMLElement|null> = ref(null)
@@ -134,7 +134,7 @@ export default createComponent<TProps>({
       emit('input', cubicBezierEditable.value)
     }
 
-    watch(() => cubicBezier, (value) => {
+    watch(() => props.cubicBezier, (value) => {
       cubicBezierEditable.value = value
     })
 

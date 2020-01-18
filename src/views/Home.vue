@@ -46,7 +46,12 @@
         />
       </template>
     </div>
-    <Preview class="s-view_secondaryView" :cubicBezier="cubicBezier" :compareCubicBezier="compareCubicBezier" />
+
+    <Preview
+      class="s-view_secondaryView"
+      :cubicBezier="cubicBezier"
+      :compareCubicBezier="compareCubicBezier"
+    />
   </div>
 </template>
 

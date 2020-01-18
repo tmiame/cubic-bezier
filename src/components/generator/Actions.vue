@@ -54,7 +54,7 @@ export default createComponent<TProps>({
     Button,
     CarbonIcon
   },
-  setup ({ cubicBezier }, { emit }) {
+  setup (props, { emit }) {
     const dialog = ref(false)
 
     const onOpenDialog = () => {
