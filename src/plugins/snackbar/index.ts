@@ -1,34 +1,21 @@
-import { ref } from '@vue/composition-api'
-import { sleep } from '@/utils'
+import Vue from 'vue'
+import { ESnackbarType } from '@/types'
+
+type TSnackbarItem = {
+  text: string,
+  type: ESnackbarType,
+  timeout?: number,
+  cb?: () => void,
+}
 
 export default function useSnackbar () {
-  const snackbar = ref(false)
+  const store = Vue.prototype.$store.snackbar
 
-  const showSnackbar = () => {
-    snackbar.value = true
-  }
-
-  const hideSnackbar = () => {
-    snackbar.value = false
-  }
-
-  const hideTimerSnackbar = async (delay = 2000) => {
-    await sleep(delay)
-
-    snackbar.value = false
-  }
-
-  const autoHideSnackbar = async (delay = 2000) => {
-    snackbar.value = true
-    await sleep(delay)
-    snackbar.value = false
+  const addSnackbar = (value:TSnackbarItem) => {
+    store.actions.addSnackbar(value)
   }
 
   return {
-    snackbar,
-    showSnackbar,
-    hideSnackbar,
-    hideTimerSnackbar,
-    autoHideSnackbar
+    addSnackbar
   }
 }

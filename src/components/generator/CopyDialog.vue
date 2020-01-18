@@ -30,11 +30,6 @@
       </section>
 
       <Button type="button" theme="primary" @click.native="onClose">Close</Button>
-
-      <FSnackbar v-model="snackbar" theme="success">
-        <CarbonIcon name="status-checkmark" />
-        Copied to clipboard 👋
-      </FSnackbar>
     </div>
   </div>
 </template>
@@ -48,12 +43,12 @@ import {
   computed
 } from '@vue/composition-api'
 
-import FSnackbar from '@/components/flexible/FSnackbar.vue'
 import Button from '@/components/base/Button.vue'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
 import useClipboard from '@/plugins/clipboard'
 import useSnackbar from '@/plugins/snackbar'
 import { nextTick } from '@/utils'
+import { ESnackbarType } from '@/types'
 
 export enum EExportType {
   cubicBezierHyphen = 1,
@@ -64,7 +59,6 @@ export enum EExportType {
 export default createComponent({
   name: 'CopyDialog',
   components: {
-    FSnackbar,
     Button,
     CarbonIcon
   },
@@ -73,7 +67,7 @@ export default createComponent({
     const cubicBezier = store.getters.cubicBezier
 
     const { onCopy: onCopyText, copyText } = useClipboard()
-    const { snackbar, showSnackbar, hideTimerSnackbar } = useSnackbar()
+    const { addSnackbar } = useSnackbar()
 
     const exportHyphen:RefType<HTMLInputElement|null> = ref(null)
     const exportCamel:RefType<HTMLInputElement|null> = ref(null)
@@ -106,11 +100,16 @@ export default createComponent({
       }
     }
 
-    const onCopy = async (type:EExportType) => {
-      showSnackbar()
+    const onCopy = (type:EExportType) => {
+      addSnackbar({
+        text: 'Copied to clipboard 👋',
+        type: ESnackbarType.success,
+        timeout: 10000
+      })
+
       onSelectCopyText(type)
       onCopyText()
-      await hideTimerSnackbar()
+      nextTick(onClose)
     }
 
     const onClose = () => {
@@ -118,7 +117,6 @@ export default createComponent({
     }
 
     return {
-      snackbar,
       exportHyphen,
       exportCamel,
       exportText,
@@ -154,7 +152,7 @@ export default createComponent({
   padding: var(--size-60) var(--size-60);
   background-color: var(--general-background-a);
   border-radius: var(--radius-base);
-  max-width: 50rem;
+  max-width: 40rem;
   width: 100%;
   height: auto;
   cursor: auto;
@@ -215,26 +213,17 @@ export default createComponent({
 
 .s-input_textField {
   box-shadow: 0 1px 3px 0 rgba(14, 30, 37, 0.05);
-}
-
-.s-input_textField {
   color: currentColor;
-  background-color: #ffffff;
-  border: 1px solid #d6d6d6;
-
-  html[dark] & {
-    background-color: #000000;
-    border: 1px solid rgba(255,255,255,0.25);
-  }
+  background-color: var(--c-btn);
+  border: 1px solid var(--c-btn-border);
 
   @include FR_HOVER {
-    background-color: #f9f9f9;
+    background-color: var(--c-btn-hover);
   }
 
   &:focus {
-    border-color: #0070c9;
-    box-shadow: 0 0 0 3px rgba(131,192,253,0.5);
+    border-color: var(--c-btn-focus-border);
+    box-shadow: 0 0 0 3px var(--c-btn-focus-outline);
   }
 }
-
 </style>

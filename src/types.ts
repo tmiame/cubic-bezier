@@ -15,3 +15,10 @@ export enum ECubic {
   BOTTOM_RIGHT = 2,
   BOTTOM_LEFT = 4,
 }
+
+export enum ESnackbarType {
+  normal = 'normal',
+  success = 'success',
+  error = 'error',
+  warning = 'warning'
+}

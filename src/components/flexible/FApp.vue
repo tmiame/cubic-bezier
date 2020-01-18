@@ -1,7 +1,11 @@
 <script>
 import eventemitter from '@/plugins/eventemitter'
+import Snackbars from '@/components/Snackbars.vue'
 
 export default {
+  components: {
+    Snackbars
+  },
   data () {
     return {
       fragments: []
@@ -35,6 +39,7 @@ export default {
   },
   render (h) {
     return h('div', [
+      h('Snackbars'),
       this.vnodeFragments,
       this.$slots.default
     ])
