@@ -145,6 +145,7 @@ export default createComponent<TProps>({
 
         if (!props.repeat) {
           destroy()
+          return
         }
       }
 
