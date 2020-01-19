@@ -20,15 +20,6 @@
         </div>
       </section>
 
-      <section class="s-modal_block">
-        <div class="s-input">
-          <input v-model="valueText" class="s-input_textField" readonly ref="exportText">
-          <button class="s-input_append" @click.stop="onCopy(3)">
-            <CarbonIcon name="copy" />
-          </button>
-        </div>
-      </section>
-
       <Button type="button" theme="primary" @click.native="onClose">Close</Button>
     </div>
   </div>
@@ -39,7 +30,6 @@ import {
   createComponent,
   ref,
   Ref as RefType,
-  SetupContext,
   computed
 } from '@vue/composition-api'
 
@@ -47,22 +37,20 @@ import Button from '@/components/base/Button.vue'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
 import useClipboard from '@/plugins/clipboard'
 import useSnackbar from '@/plugins/snackbar'
-import { nextTick } from '@/utils'
 import { ESnackbarType } from '@/types'
 
 export enum EExportType {
   cubicBezierHyphen = 1,
-  cubicBezierCamel = 2,
-  text = 3
+  cubicBezierCamel = 2
 }
 
 export default createComponent({
-  name: 'CopyDialog',
+  name: 'ShareDialog',
   components: {
     Button,
     CarbonIcon
   },
-  setup (props:any, { emit, root: { $store } }:SetupContext) {
+  setup (props, { emit, root: { $store } }) {
     const store = $store.generatorStore
     const cubicBezier = store.getters.cubicBezier
 
@@ -71,13 +59,12 @@ export default createComponent({
 
     const exportHyphen:RefType<HTMLInputElement|null> = ref(null)
     const exportCamel:RefType<HTMLInputElement|null> = ref(null)
-    const exportText:RefType<HTMLInputElement|null> = ref(null)
 
     const valueHyphen = computed(() => {
-      return `cubic-bezier(${cubicBezier.value})`
+      return `${window.location.host}/?c=${cubicBezier.value}`
     })
     const valueCamel = computed(() => {
-      return `cubicBezier(${cubicBezier.value})`
+      return `${window.location.host}/?c=${cubicBezier.value}&c2=${cubicBezier.value}`
     })
 
     const onSelectCopyText = (type:EExportType) => {
@@ -91,11 +78,6 @@ export default createComponent({
           exportCamel.value!.focus()
           exportCamel.value!.select()
           copyText.value = valueCamel.value
-          break
-        case EExportType.text:
-          exportText.value!.focus()
-          exportText.value!.select()
-          copyText.value = cubicBezier.value
           break
       }
     }
@@ -118,10 +100,8 @@ export default createComponent({
     return {
       exportHyphen,
       exportCamel,
-      exportText,
       valueHyphen,
       valueCamel,
-      valueText: cubicBezier,
       onClose,
       onCopy
     }
@@ -131,11 +111,6 @@ export default createComponent({
 
 <style lang="scss" scoped>
 @import '@/styles/import.scss';
-
-::v-deep {
-  --btn-height: 3.5rem;
-  --btn-font-size: 1.25rem;
-}
 
 .s-root {
   width: 100%;

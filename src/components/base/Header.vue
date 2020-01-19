@@ -129,10 +129,7 @@ export default createComponent({
   padding-right: var(--size-30);
   height: var(--header-height);
   z-index: var(--zindex-fixed);
-
-  html[dark] & {
-    border-bottom: 1px solid var(--c-border);
-  }
+  border-bottom: 1px solid var(--c-border);
 }
 
 .s-header_logo {

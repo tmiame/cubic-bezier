@@ -9,6 +9,7 @@
         '--light': light,
         '--fab': fab,
         '--block': block,
+        '--small': small,
       },
       `--${theme}`,
       `--${type}`
@@ -40,6 +41,10 @@
 <script>
 export default {
   props: {
+    small: {
+      type: Boolean,
+      default: false
+    },
     fab: {
       type: Boolean,
       default: false
@@ -145,6 +150,11 @@ export default {
     stroke: currentColor;
     stroke-width: 0;
   }
+
+  &.--small {
+    font-size: var(--btn-font-size-small);
+    height: var(--btn-height-small);
+  }
 }
 
 // Disabled button
@@ -230,10 +240,6 @@ export default {
 // ===========================================
 // style
 // ===========================================
-.s-button:not(.--light):not(.--disabled) {
-  box-shadow: 0 1px 3px 0 rgba(14, 30, 37, 0.05);
-}
-
 .s-button:not(.--disabled).--base {
   color: currentColor;
   background-color: var(--c-btn);

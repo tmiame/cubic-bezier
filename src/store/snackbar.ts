@@ -47,7 +47,6 @@ const store = () => {
       if (value.timeout) {
         setTimeout(() => {
           stateAsRefs.items.value = stateAsRefs.items.value.filter(item => item.id !== id)
-          console.log('auto close')
         }, value.timeout)
       }
     }
@@ -55,7 +54,6 @@ const store = () => {
 
   const actions = {
     addSnackbar (value: TSnackbarItem): void {
-      console.log('addSnackbar', value)
       mutations.SET_CUBIC_BEZIER(value)
     }
   }

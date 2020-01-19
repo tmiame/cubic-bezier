@@ -1,6 +1,6 @@
 <template>
   <div class="s-wrapper" :class="{ '--active': items.length }">
-    <transition-group name="vfade" tag="div">
+    <transition-group name="vscale" tag="div">
       <div
         v-for="item of items"
         :key="item.id"
@@ -12,7 +12,7 @@
             <CarbonIcon :name="getIconName(item.type)" />
             <span>{{ item.text || item.id }}</span>
           </div>
-          <button class="s-snackbar_close" @click="item.close">
+          <button v-if="item.timeout === 0" class="s-snackbar_close" @click="item.close">
             <CarbonIcon name="close" />
           </button>
         </div>
@@ -53,23 +53,6 @@ export default createComponent({
 <style lang="scss" scoped>
 @import '@/styles/import.scss';
 
-.vfade-enter-active,
-.vfade-leave-active {
-  will-change: opacity;
-}
-
-.vfade-enter-to,
-.vfade-leave {
-  opacity: 1;
-  transition: opacity 300ms cubic-bezier(0.41,0.4,0.37,1.25);
-}
-
-.vfade-enter,
-.vfade-leave-to {
-  opacity: 0;
-  transition: opacity 200ms ease-out;
-}
-
 .s-wrapper {
   position: fixed;
   top: 0;
@@ -80,19 +63,6 @@ export default createComponent({
   padding: var(--size-20);
   z-index: var(--zindex-popover);
   pointer-events: none;
-  min-height: 10rem;
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 10rem;
-    background-image: linear-gradient(rgba(#000000, 0.25), rgba(#000000, 0));
-    opacity: 0;
-    transition: opacity 200ms ease-out;
-  }
 
   &.--active {
     &:before {
@@ -109,11 +79,11 @@ export default createComponent({
 .s-snackbar_inner {
   display: inline-flex;
   justify-content: center;
-  align-items: stretch;
-  pointer-events: auto;
-  padding: var(--size-15) var(--size-30);
-  border-radius: 50px;
-  background-color: var(--c-primary);
+  align-items: center;
+  padding: var(--size-10) var(--size-25);
+  border-radius: 100px;
+  box-shadow: var(--shadow-long);
+  background-color: var(--text-primary);
   color: var(--text-primary-inverse);
 }
 
@@ -129,14 +99,12 @@ export default createComponent({
 }
 
 .s-snackbar_close {
-  height: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: var(--size-15);
+  margin-left: var(--space-2);
+  pointer-events: auto;
 
   &::v-deep .s-icon {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 
   @include FR_HOVER() {

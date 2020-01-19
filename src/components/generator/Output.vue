@@ -204,7 +204,6 @@ export default createComponent<TProps>({
 }
 
 .s-form-textbox {
-  box-shadow: 0 1px 3px 0 rgba(14, 30, 37, 0.05);
   color: currentColor;
   background-color: var(--c-btn);
   border: 1px solid var(--c-btn-border);

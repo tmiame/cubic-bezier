@@ -23,10 +23,11 @@ import IconUnknownFilled from '@carbon/icons-vue/es/unknown--filled/32'
 import IconErrorFilled from '@carbon/icons-vue/es/error--filled/32'
 import IconDraw from '@carbon/icons-vue/es/draw/32'
 import IconLaunch from '@carbon/icons-vue/es/launch/32'
-import IconCompare from '@carbon/icons-vue/es/compare/32'
+import IconCompare from '@carbon/icons-vue/es/contrast/32'
 import IconClose from '@carbon/icons-vue/es/close/32'
 import IconAdd from '@carbon/icons-vue/es/add/32'
 import IconSubtract from '@carbon/icons-vue/es/subtract/32'
+import IconLink from '@carbon/icons-vue/es/link/32'
 
 const icons = {
   'home': IconHome,
@@ -46,7 +47,8 @@ const icons = {
   'compare': IconCompare,
   'close': IconClose,
   'add': IconAdd,
-  'subtract': IconSubtract
+  'subtract': IconSubtract,
+  'link': IconLink
 }
 
 export default {

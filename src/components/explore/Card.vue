@@ -1,19 +1,25 @@
 <template>
   <div class="s-card">
+    <div
+      v-if="title"
+      class="s-card_title"
+      v-text="title"
+    />
+
     <figure>
-      <DotSnapshot class="s-card_snapshot" :value="cubicBezier" />
-      <BezierLine class="s-card_bezierLine" :value="cubicBezier" />
-      <figcaption class="s-card_title" v-text="cubicBezier" />
+      <DotSnapshot class="s-card_snapshot" :value="cubicBezier" :repeat="false" />
+      <EaseLine class="s-card_easeline" :value="cubicBezier" />
+      <figcaption class="s-card_value" v-text="cubicBezierToString" />
     </figure>
 
     <div class="s-card_actions">
-      <Button class="s-card_action u-mr-1" type="button" @click.native="onOpenDialog">
+      <Button small class="s-card_action u-mr-1" type="button" @click.native="onOpenDialog">
         <template #beforeIcon>
           <CarbonIcon name="copy" />
         </template>
         Copy
       </Button>
-      <Button class="s-card_action u-ml-1" type="router" :to="{ name: 'home', hash: cubicBezierToString }">
+      <Button small class="s-card_action u-ml-1" type="router" :to="{ name: 'home', hash: `#${cubicBezierToString}` }" @click.native="onEdit">
         <template #beforeIcon>
           <CarbonIcon name="launch" />
         </template>
@@ -28,28 +34,34 @@
 </template>
 
 <script lang="ts">
-import { createComponent, computed, ref } from '@vue/composition-api'
+import { createComponent, computed, ref, PropType } from '@vue/composition-api'
 
 import FDialog from '@/components/flexible/FDialog.vue'
 import CopyDialog from '@/components/generator/CopyDialog.vue'
-import BezierLine from '@/components/HelloWorld.vue'
+import EaseLine from '@/components/HelloWorld.vue'
 import DotSnapshot from '@/components/DotSnapshot.vue'
 import Button from '@/components/base/Button.vue'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
+import useSnackbar from '@/plugins/snackbar'
+import { ESnackbarType } from '@/types'
 
 export default createComponent({
   name: 'ExploreCard',
   components: {
     FDialog,
     CopyDialog,
-    BezierLine,
+    EaseLine,
     DotSnapshot,
     Button,
     CarbonIcon
   },
   props: {
+    title: {
+      type: String as PropType<string>,
+      default: ''
+    },
     cubicBezier: {
-      type: Array,
+      type: Array as PropType<number[]>,
       required: true
     }
   },
@@ -57,13 +69,22 @@ export default createComponent({
     const dialog = ref(false)
 
     const cubicBezierToString = computed(() => {
-      return `#${props.cubicBezier.join(',')}`
+      return `${props.cubicBezier.join(',')}`
     })
+
+    const { addSnackbar } = useSnackbar()
+
+    const onEdit = () => {
+      addSnackbar({
+        text: `Edit [${props.cubicBezier}]`,
+        type: ESnackbarType.success,
+        timeout: 1500
+      })
+    }
 
     const onOpenDialog = () => {
       dialog.value = true
     }
-
     const onCopyDialogClose = () => {
       dialog.value = false
     }
@@ -72,7 +93,8 @@ export default createComponent({
       dialog,
       cubicBezierToString,
       onOpenDialog,
-      onCopyDialogClose
+      onCopyDialogClose,
+      onEdit
     }
   }
 })
@@ -80,47 +102,53 @@ export default createComponent({
 
 <style lang="scss" scoped>
 .s-card {
-  padding-top: var(--size-40);
-  padding-left: var(--size-25);
-  padding-right: var(--size-25);
-  padding-top: var(--size-40);
+  padding-top: var(--size-30);
   padding-bottom: var(--size-30);
   position: relative;
   text-align: center;
   background-color: var(--general-background-a);
 }
 
-.s-card figure {
-  position: relative;
-  margin-bottom: var(--size-30);
+.s-card_title {
+  margin-bottom: var(--size-20);
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-bold);
+  line-height: 0.9;
 }
 
-.s-card_bezierLine {
+.s-card figure {
+  position: relative;
+  margin-bottom: var(--size-20);
+}
+
+.s-card_easeline {
   width: 100%;
-  margin-top: -5%;
-  margin-bottom: -10%;
+  margin-top: -(100% / 6);
+  margin-bottom: -(100% / 6);
 }
 
 .s-card_snapshot {
   width: ((100% / 6 * 4) + (100% * 0.2));
   margin: 0 auto;
-  height: 2rem;
+  height: 1.5rem;
+  margin-bottom: var(--size-20);
 }
 
-.s-card_title {
-  font-size: 1.5rem;
-  font-weight: var(--font-weight-black);
-  letter-spacing: -0.05em;
+.s-card_value {
+  margin-top: var(--size-20);
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-bold);
+  line-height: 0.9;
 }
 
 .s-card_actions {
+  padding-left: var(--size-25);
+  padding-right: var(--size-25);
   display: flex;
-  justify-content: flex-start;
   align-items: center;
 }
 
 .s-card_action {
   width: (100% / 2);
-  text-align: center;
 }
 </style>

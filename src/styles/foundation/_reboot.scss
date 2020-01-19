@@ -29,21 +29,21 @@
 html {
   font-size: max(min(calc(0.7vw + 0.7vh), 16px), 12px);
 
-  @include FR_MQ_ONLY(XS) {
-    font-size: 12px;
-  }
+  // @include FR_MQ_ONLY(XS) {
+  //   font-size: 12px;
+  // }
 
-  @include FR_MQ_ONLY(S) {
-    font-size: 13px;
-  }
+  // @include FR_MQ_ONLY(S) {
+  //   font-size: 13px;
+  // }
 
-  @include FR_MQ_ONLY(XT) {
-    font-size: 14px;
-  }
+  // @include FR_MQ_ONLY(XT) {
+  //   font-size: 14px;
+  // }
 
-  @include FR_MQ_ONLY(T) {
-    font-size: 15px;
-  }
+  // @include FR_MQ_ONLY(T) {
+  //   font-size: 15px;
+  // }
 }
 
 html {

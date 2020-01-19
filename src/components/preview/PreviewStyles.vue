@@ -51,11 +51,6 @@ export default createComponent({
         name: 'Vue logo',
         image: require('@/assets/logo.png'),
         component: 'DemoVueLogo'
-      },
-      {
-        id: 'slide-out',
-        name: 'SlideOut',
-        component: 'DemoSlideOut'
       }
     ])
     const currentStyle = ref(styles.value[0])

@@ -1,13 +1,20 @@
 <template>
   <div class="s-actions">
-    <Button type="button" class="u-mx-2" @click.native="onOpenDialog">
+    <Button type="button" class="u-mx-0" @click.native="onOpenCopyDialog">
       <template #beforeIcon>
         <CarbonIcon name="copy" />
       </template>
       Copy
     </Button>
 
-    <Button type="button" class="u-ml-auto" @click.native="onCompareEdit">
+    <Button type="button" class="u-mx-2" @click.native="onOpenShareDialog">
+      <template #beforeIcon>
+        <CarbonIcon name="link" />
+      </template>
+      Share
+    </Button>
+
+    <Button type="button" class="u-ml-auto u-mr-0" @click.native="onCompareEdit">
       <template #beforeIcon>
         <CarbonIcon name="compare" />
       </template>
@@ -15,7 +22,11 @@
     </Button>
 
     <FDialog v-model="dialog">
-      <CopyDialog @close="onCopyDialogClose" />
+      <CopyDialog @close="onCloseCopyDialog" />
+    </FDialog>
+
+    <FDialog v-model="shareDialogModel">
+      <ShareDialog @close="onCloseShareDialog" />
     </FDialog>
   </div>
 </template>
@@ -28,6 +39,7 @@ import {
 
 import FDialog from '@/components/flexible/FDialog.vue'
 import CopyDialog from '@/components/generator/CopyDialog.vue'
+import ShareDialog from '@/components/generator/ShareDialog.vue'
 import Button from '@/components/base/Button.vue'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
 import { DEFAULT_CUBIC } from '@/constants'
@@ -51,18 +63,28 @@ export default createComponent<TProps>({
   components: {
     FDialog,
     CopyDialog,
+    ShareDialog,
     Button,
     CarbonIcon
   },
   setup (props, { emit }) {
     const dialog = ref(false)
+    const shareDialogModel = ref(false)
 
-    const onOpenDialog = () => {
+    const onOpenCopyDialog = () => {
       dialog.value = true
     }
 
-    const onCopyDialogClose = () => {
+    const onCloseCopyDialog = () => {
       dialog.value = false
+    }
+
+    const onOpenShareDialog = () => {
+      shareDialogModel.value = true
+    }
+
+    const onCloseShareDialog = () => {
+      shareDialogModel.value = false
     }
 
     const onCompareEdit = () => {
@@ -71,8 +93,11 @@ export default createComponent<TProps>({
 
     return {
       dialog,
-      onOpenDialog,
-      onCopyDialogClose,
+      shareDialogModel,
+      onOpenCopyDialog,
+      onCloseCopyDialog,
+      onOpenShareDialog,
+      onCloseShareDialog,
       onCompareEdit
     }
   }
