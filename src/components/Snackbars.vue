@@ -115,7 +115,6 @@ export default createComponent({
   border-radius: 50px;
   background-color: var(--c-primary);
   color: var(--text-primary-inverse);
-  backdrop-filter: blur(10px);
 }
 
 .s-snackbar_content {
@@ -125,7 +124,7 @@ export default createComponent({
 
   &::v-deep .s-icon {
     margin-right: var(--space-2);
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 }
 

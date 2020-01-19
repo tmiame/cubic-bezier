@@ -1,40 +1,37 @@
 <template>
   <div class="s-dots">
-    <canvas ref="canvas" :class="`--${direction}`" />
+    <canvas ref="canvas" />
   </div>
 </template>
 
 <script lang="ts">
-import anime from 'animejs'
-import bezier from 'bezier-easing'
 import {
   createComponent,
   ref,
   computed,
   reactive,
   onMounted,
-  onBeforeMount,
   watch,
   inject,
-  Ref as RefType
+  Ref as RefType,
+  onUnmounted
 } from '@vue/composition-api'
-import { THEME_SYMBOL, THEME_DEFAULT, THEMES } from '@/constants'
+
+import bezier from 'bezier-easing'
 import useResize from '@/plugins/resize'
-import { TCubic } from './generator/types'
+import useDebounce from '@/plugins/debounce'
+import { nextTick } from '@/utils'
+import { DEFAULT_CUBIC, THEME_SYMBOL, THEME_DEFAULT, THEMES } from '@/constants'
+import { TCubic } from '@/types'
 
-export enum EDirection {
-  horizontal = 'horizontal',
-  vertical = 'vertical'
-}
-
-type PropType = {
+type TProps = {
   value: TCubic
-  direction: EDirection
   repeat: boolean
   duration: number
 }
 
 type StateType = {
+  raf: boolean
   rafId: any
   ctx: CanvasRenderingContext2D|null
   ctxWidth: number
@@ -44,17 +41,13 @@ type StateType = {
   snapshotOffsetY: number
 }
 
-export default createComponent({
+export default createComponent<TProps>({
   props: {
     value: {
       type: Array,
       default () {
-        return [0.4, 0, 0.2, 1]
+        return DEFAULT_CUBIC
       }
-    },
-    direction: {
-      type: String,
-      default: 'horizontal'
     },
     duration: {
       type: Number,
@@ -66,11 +59,12 @@ export default createComponent({
     }
   },
 
-  setup (props:PropType) {
+  setup (props) {
     const state:StateType = reactive({
       ctx: null,
       ctxWidth: 0,
       ctxHeight: 0,
+      raf: true,
       rafId: '',
       snapshotOffsetX: 100,
       snapshotOffsetY: 100,
@@ -79,33 +73,15 @@ export default createComponent({
 
     const theme:any = inject(THEME_SYMBOL, THEME_DEFAULT)
     const rgb = computed(() => (theme.value === THEMES.dark) ? '255,255,255' : '0,0,0')
-    const canvas:RefType<HTMLCanvasElement|null> = ref(null)
 
-    let now = performance.now()
+    let nowTime = performance.now()
+
+    const canvas:RefType<HTMLCanvasElement|null> = ref(null)
     const easing = ref(bezier(...props.value))
     const endTime = ref(0)
     const lastDrawPosition = ref(0)
-
     const startDelay = 500
     const endDelay = 2000
-
-    const setSize = () => {
-      const el = canvas.value
-      if (!el) {
-        return
-      }
-      state.ctx = el.getContext('2d')
-      state.ctxWidth = el.width = el.clientWidth * 3
-      state.ctxHeight = el.height = el.clientHeight * 3
-      state.snapshotSize = Math.round(Math.min(state.ctxWidth, state.ctxHeight) / 2)
-      state.snapshotOffsetX = state.ctxWidth * 0.1
-      state.snapshotOffsetY = state.ctxHeight * 0.1
-    }
-
-    const init = () => {
-      setSize()
-      state.rafId = window.requestAnimationFrame(render)
-    }
 
     const animeParams = computed(() => [
       state.snapshotSize + state.snapshotOffsetX,
@@ -115,14 +91,28 @@ export default createComponent({
     ])
 
     const snapshots = computed(() => {
-      const o = []
-      for (let index = 0; index <= 1; index += 0.08) {
-        o.push(easing.value(index))
-      }
-      return o
+      return [...Array(12).keys()].map(index => easing.value(index / 12))
     })
 
-    const destroyAnime = () => {
+    const setSize = () => {
+      const el = canvas.value
+      if (!el) {
+        return
+      }
+      state.ctx = el.getContext('2d')
+      state.ctxWidth = el.width = el.clientWidth * 2
+      state.ctxHeight = el.height = el.clientHeight * 2
+      state.snapshotSize = Math.round(Math.min(state.ctxWidth, state.ctxHeight) / 2 - 1)
+      state.snapshotOffsetX = state.ctxWidth * 0.1
+      state.snapshotOffsetY = state.ctxHeight * 0.1
+    }
+
+    const init = () => {
+      setSize()
+      state.rafId = window.requestAnimationFrame(render)
+    }
+
+    const destroy = () => {
       if (state.rafId) {
         window.cancelAnimationFrame(state.rafId)
         state.rafId = null
@@ -130,38 +120,40 @@ export default createComponent({
     }
 
     const render = (time:number) => {
-      state.rafId = window.requestAnimationFrame(render)
-
-      if (endTime.value > 0) {
-        let tEnd = (time - endTime.value) / endDelay
-        if (tEnd > 1) {
-          endTime.value = 0
-          lastDrawPosition.value = 0
-          now = performance.now()
-        }
+      if (!state.raf) {
+        window.cancelAnimationFrame(state.rafId)
+        state.rafId = null
         return
       }
 
-      let t = (time - now) / props.duration
+      if (endTime.value > 0) {
+        const isComplete = (time - endTime.value) / endDelay
+        if (isComplete > 1) {
+          endTime.value = 0
+          lastDrawPosition.value = 0
+          nowTime = performance.now()
+        }
+
+        state.rafId = window.requestAnimationFrame(render)
+        return
+      }
+
+      let t = (time - nowTime) / props.duration
       if (t > 1) {
         t = 1
         endTime.value = performance.now()
 
         if (!props.repeat) {
-          destroyAnime()
+          destroy()
         }
       }
 
-      state.ctx!.clearRect(0, 0, state.ctxWidth, state.ctxHeight)
+      draw(t)
 
-      if (props.direction === EDirection.horizontal) {
-        renderX(t)
-      } else {
-        renderX(t)
-      }
+      state.rafId = window.requestAnimationFrame(render)
     }
 
-    const renderX = (t:number) => {
+    const draw = (t:number) => {
       const {
         ctx,
         ctxWidth,
@@ -170,13 +162,20 @@ export default createComponent({
         snapshotOffsetX: offsetX
       } = state
 
+      if (!ctx) {
+        return
+      }
+
+      ctx.clearRect(0, 0, ctxWidth, ctxHeight)
+
       const x = (animeParams.value[1] - animeParams.value[0]) * easing.value(t) + animeParams.value[0]
       lastDrawPosition.value = Math.max(lastDrawPosition.value, x)
+
       const startSnapAlpha = 0.1
-      ctx!.beginPath()
-      ctx!.arc(size + offsetX, size, size, 0, 2 * Math.PI)
-      ctx!.fillStyle = `rgba(${rgb.value}, ${startSnapAlpha})`
-      ctx!.fill()
+      ctx.beginPath()
+      ctx.arc(size + offsetX, size, size, 0, 2 * Math.PI)
+      ctx.fillStyle = `rgba(${rgb.value}, ${startSnapAlpha})`
+      ctx.fill()
 
       snapshots.value.forEach(snap => {
         const range = (animeParams.value[1] - animeParams.value[0])
@@ -185,26 +184,29 @@ export default createComponent({
         const alpha = snap * 0.25
 
         if (passed) {
-          ctx!.beginPath()
-          ctx!.arc(sx, size, size, 0, 2 * Math.PI)
-          ctx!.fillStyle = `rgba(${rgb.value}, ${Math.max(0.05, alpha)})`
-          ctx!.fill()
+          ctx.beginPath()
+          ctx.arc(sx, size, size, 0, 2 * Math.PI)
+          ctx.fillStyle = `rgba(${rgb.value}, ${Math.max(0.05, alpha)})`
+          ctx.fill()
         }
       })
 
-      ctx!.beginPath()
-      ctx!.arc(x, size, size, 0, 2 * Math.PI)
-      ctx!.fillStyle = `rgba(${rgb.value}, 1)`
-      ctx!.fill()
+      ctx.beginPath()
+      ctx.arc(x, size, size, 0, 2 * Math.PI)
+      ctx.fillStyle = `rgba(${rgb.value}, 1)`
+      ctx.fill()
     }
 
     const { resizeCallback } = useResize()
+    const { debounce } = useDebounce()
     resizeCallback.value = () => {
       setSize()
     }
 
     watch(() => props.value, () => {
-      easing.value = bezier(...props.value)
+      debounce(() => {
+        easing.value = bezier(...props.value)
+      })
     })
 
     watch(() => props.repeat, (newVal) => {
@@ -217,8 +219,9 @@ export default createComponent({
       init()
     })
 
-    onBeforeMount(() => {
-      destroyAnime()
+    onUnmounted(() => {
+      state.raf = false
+      destroy()
     })
 
     return {
@@ -242,9 +245,5 @@ export default createComponent({
   width: 100%;
   height: 100%;
   vertical-align: bottom;
-
-  &.--vertical {
-    transform: rotate(180deg);
-  }
 }
 </style>
