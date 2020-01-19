@@ -104,7 +104,7 @@ export default createComponent({
       addSnackbar({
         text: 'Copied to clipboard 👋',
         type: ESnackbarType.success,
-        timeout: 10000
+        timeout: 2000
       })
 
       onSelectCopyText(type)

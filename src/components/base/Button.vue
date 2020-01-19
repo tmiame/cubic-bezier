@@ -114,9 +114,6 @@ export default {
 @import '@/styles/import.scss';
 
 .s-button {
-  --btn-height: 3.5rem;
-  --btn-font-size: 1.2rem;
-
   // <button> reset
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
@@ -173,6 +170,7 @@ export default {
   border: 0 solid transparent;
   box-shadow: none;
   -moz-appearance: textfield;
+  cursor: pointer;
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
@@ -212,7 +210,7 @@ export default {
   &::v-deep svg,
   svg {
     font-size: 1.25rem;
-    stroke-width: 1.25;
+    stroke-width: 0.5;
   }
 }
 
@@ -224,12 +222,9 @@ export default {
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  width: 1.25em;
-  height: 1.25em;
-
-  &::v-deep svg {
-    stroke-width: 1.25;
-  }
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 // ===========================================

@@ -9,7 +9,8 @@
           :class="{ '--active': currentStyle.id === style.id }"
           @click="onChangeStyle(style)"
         >
-          {{ style.name }}
+          <img class="s-styleItem_image" v-if="style.image" :src="style.image">
+          <div class="s-styleItem_title" v-text="style.name || style.id" />
         </div>
       </div>
     </div>
@@ -23,35 +24,38 @@ import {
   computed,
   reactive,
   onMounted,
+  onUnmounted,
   watch,
-  Ref as RefType,
-  SetupContext
+  Ref as RefType
 } from '@vue/composition-api'
 
 import Swiper from 'swiper'
 import 'swiper/css/swiper.css'
 
-interface IDemoStyle {
-  id: string
-  name: string
-  component: string
-}
+import { IDemoStyle } from '@/types'
 
 export default createComponent({
   name: 'PreviewStyles',
-  setup (props, { emit }:SetupContext) {
-    let swiper = null
+  setup (props, { emit }) {
+    let swiper:Swiper|null = null
     const swiperElement:RefType<HTMLElement|null> = ref(null)
     const styles:RefType<IDemoStyle[]> = ref([
       {
         id: 'snapshot',
         name: 'Dots',
+        image: require('@/assets/demo-snapshot.png'),
         component: 'DemoSnapshot'
       },
       {
         id: 'vue',
         name: 'Vue logo',
+        image: require('@/assets/logo.png'),
         component: 'DemoVueLogo'
+      },
+      {
+        id: 'slide-out',
+        name: 'SlideOut',
+        component: 'DemoSlideOut'
       }
     ])
     const currentStyle = ref(styles.value[0])
@@ -62,10 +66,17 @@ export default createComponent({
 
     const initSwiper = () => {
       swiper = new Swiper(swiperElement.value!, {
-        spaceBetween: 16,
+        spaceBetween: 10,
         slidesOffsetAfter: 100,
-        slidesPerView: 4
+        slidesPerView: 5
       })
+    }
+
+    const destroySwiper = () => {
+      if (swiper) {
+        swiper.destroy(true, true)
+        swiper = null
+      }
     }
 
     watch(() => {
@@ -74,6 +85,10 @@ export default createComponent({
 
     onMounted(() => {
       initSwiper()
+    })
+
+    onUnmounted(() => {
+      destroySwiper()
     })
 
     return {
@@ -91,8 +106,8 @@ export default createComponent({
 
 .swiper-wrapper {
   padding-top: 3px;
-  padding-bottom: var(--size-30);
-  padding-left: var(--size-30);
+  padding-bottom: var(--size-25);
+  padding-left: var(--size-25);
 }
 
 .s-styles {
@@ -102,7 +117,6 @@ export default createComponent({
 
 .s-styles_item {
   height: 100px;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 0.5px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.05) 0px 2px 4px 0px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -126,5 +140,19 @@ export default createComponent({
   &.--active {
     background-color: var(--general-background-c);
   }
+}
+
+.s-styleItem_image {
+  position: absolute;
+  top: calc(50% - 2rem);
+  left: 0;
+  width: 100%;
+  height: 2rem;
+  object-fit: contain;
+  object-position: center;
+}
+
+.s-styleItem_title {
+  // font-weight: var(--font-weight-bold);
 }
 </style>

@@ -22,3 +22,16 @@ export enum ESnackbarType {
   error = 'error',
   warning = 'warning'
 }
+
+export interface IDemoProps {
+  cubicBezier: TCubic,
+  compareCubicBezier: TCubic,
+  duration: number,
+  repeat: boolean
+}
+
+export interface IDemoStyle {
+  id: string
+  name: string
+  component: string
+}

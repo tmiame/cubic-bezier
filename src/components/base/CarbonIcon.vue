@@ -25,6 +25,8 @@ import IconDraw from '@carbon/icons-vue/es/draw/32'
 import IconLaunch from '@carbon/icons-vue/es/launch/32'
 import IconCompare from '@carbon/icons-vue/es/compare/32'
 import IconClose from '@carbon/icons-vue/es/close/32'
+import IconAdd from '@carbon/icons-vue/es/add/32'
+import IconSubtract from '@carbon/icons-vue/es/subtract/32'
 
 const icons = {
   'home': IconHome,
@@ -42,7 +44,9 @@ const icons = {
   'draw': IconDraw,
   'launch': IconLaunch,
   'compare': IconCompare,
-  'close': IconClose
+  'close': IconClose,
+  'add': IconAdd,
+  'subtract': IconSubtract
 }
 
 export default {

@@ -1,6 +1,6 @@
 <template>
   <div class="s-toolbar">
-    <Button type="select" class="u-mr-1">
+    <Button type="select" class="s-toolbar_speed u-mr-1">
       <template #beforeIcon>
         <CarbonIcon name="timer" />
       </template>
@@ -15,14 +15,23 @@
           <option value="1000" selected>1s</option>
           <option value="1500">1.5s</option>
           <option value="2000">2s</option>
+          <option value="5000">5s</option>
         </select>
       </label>
     </Button>
+    <div class="s-toolbar_speedControl">
+      <Button type="button" class="-up" @click.native="onDurationUp" :disabled="selected >= DURATION_MAX">
+        <CarbonIcon name="add" />
+      </Button>
+      <Button type="button" class="-down" @click.native="onDurationDown" :disabled="selected <= DURATION_MIN">
+        <CarbonIcon name="subtract" />
+      </Button>
+    </div>
 
     <Button
       type="button"
       :theme="repeated ? 'primary' : 'base'"
-      class="s-repeat u-mr-1 u-ml-auto"
+      class="u-mr-2 u-ml-auto"
       :class="{ '--active': repeated }"
       @click.native="onToggleRepeat"
     >
@@ -48,9 +57,9 @@ import {
   computed,
   reactive,
   onMounted,
+  onUnmounted,
   watch,
-  Ref as RefType,
-  SetupContext
+  Ref as RefType
 } from '@vue/composition-api'
 
 import Button from '@/components/base/Button.vue'
@@ -62,16 +71,27 @@ export default createComponent({
     Button,
     CarbonIcon
   },
-  setup (props, { emit }:SetupContext) {
-    const selected:RefType<number> = ref(1000)
-    const repeated:RefType<boolean> = ref(true)
+  setup (props, { emit }) {
+    const selected = ref(1000)
+    const repeated = ref(true)
 
-    const onToggleRepeat = () :void => {
+    const DURATION_MAX = 10000
+    const DURATION_MIN = 100
+
+    const onToggleRepeat = () => {
       repeated.value = !repeated.value
     }
 
-    const onFocusRun = () :void => {
+    const onFocusRun = () => {
       emit('focus-run')
+    }
+
+    const onDurationUp = () => {
+      selected.value = Math.min(DURATION_MAX, selected.value + 100)
+    }
+
+    const onDurationDown = () => {
+      selected.value = Math.max(DURATION_MIN, selected.value - 100)
     }
 
     watch(() => selected.value, (newVal) => {
@@ -83,10 +103,14 @@ export default createComponent({
     })
 
     return {
+      DURATION_MAX,
+      DURATION_MIN,
       selected,
       repeated,
       onToggleRepeat,
-      onFocusRun
+      onFocusRun,
+      onDurationUp,
+      onDurationDown
     }
   }
 })
@@ -95,8 +119,42 @@ export default createComponent({
 <style lang="scss" scoped>
 .s-toolbar {
   display: flex;
-  padding-top: var(--size-30);
-  padding-left: var(--size-30);
-  padding-right: var(--size-30);
+  padding-top: var(--size-25);
+  padding-left: var(--size-25);
+  padding-right: var(--size-25);
+}
+
+.s-toolbar_speed {
+  border-radius: var(--radius-base) 0 0 var(--radius-base);
+
+  .s-icon {
+    stroke-width: 1;
+  }
+}
+
+.s-toolbar_speedControl {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: var(--btn-height);
+
+  &::v-deep .s-button {
+    height: calc(50% - 2px);
+    line-height: 1;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+
+    .s-icon {
+      stroke-width: 1.5;
+    }
+  }
+
+  &::v-deep .s-button.-down {
+    border-radius: 0 0 var(--radius-base) 0;
+  }
+
+  &::v-deep .s-button.-up {
+    border-radius: 0 var(--radius-base) 0 0;
+  }
 }
 </style>

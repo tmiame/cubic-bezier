@@ -24,6 +24,12 @@ html {
 
   --font-size-base: 1rem;
   --font-size-small: 80%;
+  --font-size-body-xsmall: 0.625rem;
+  --font-size-body-small: 0.75rem;
+  --font-size-body-text: 1rem;
+  --font-size-body-medium: 1.125rem;
+  --font-size-body-large: 1.25rem;
+  --font-size-body-xlarge: 1.5rem;
 
   --font-weight-base: 600;
   --font-weight-light: 400;
@@ -57,6 +63,9 @@ html {
   --transition-duration-base: 200ms;
   --transition-duration-fast: 100ms;
   --transition-duration-slow: 350ms;
+
+  --btn-height: 3.5rem;
+  --btn-font-size: 1rem;
 
   --c-primary: #000000;
   --c-secondary: rgb(0, 85, 255);
@@ -127,7 +136,7 @@ html[dark] {
 
   --c-btn: transparent;
   --c-btn-border: #565656;
-  --c-btn-hover: #565656;
+  --c-btn-hover: #333333;
   --c-btn-selected: #565656;
   --c-btn-selected-hover: #565656;
   --c-btn-focus-outline: rgba(255,255,255,0.1);
@@ -146,3 +155,20 @@ html[dark] {
 
 // Utility
 @import 'utility/_space.scss';
+
+.vfade-enter-active,
+.vfade-leave-active {
+  will-change: opacity;
+}
+
+.vfade-enter-to,
+.vfade-leave {
+  opacity: 1;
+  transition: opacity 250ms ease-out;
+}
+
+.vfade-enter,
+.vfade-leave-to {
+  opacity: 0;
+  transition: opacity 250ms ease-out;
+}

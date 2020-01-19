@@ -1,36 +1,40 @@
 <template>
   <div class="s-demo">
-    <div class="s-demo_block">
-      <div class="s-demo_title">Current Cubic {{ cubicBezier }}</div>
-      <DotSnapshot
-        class="s-demo_snapshot"
-        :value="cubicBezier"
-        :duration="duration"
-        :repeat="repeat"
-      />
-    </div>
+    <transition name="vfade">
+      <div v-if="isActive" class="s-demo_block">
+        <div class="s-demo_title">Current Cubic {{ cubicBezier }}</div>
+        <DotSnapshot
+          class="s-demo_snapshot"
+          :value="cubicBezier"
+          :duration="duration"
+          :repeat="repeat"
+        />
+      </div>
+    </transition>
 
-    <div class="s-demo_block">
-      <div class="s-demo_title">Compare Cubic {{ compareCubicBezier }}</div>
-      <DotSnapshot
-        class="s-demo_snapshot"
-        :value="compareCubicBezier"
-        :duration="duration"
-        :repeat="repeat"
-      />
-    </div>
+    <transition name="vfade">
+      <div v-if="isActive" class="s-demo_block">
+        <div class="s-demo_title">Compare Cubic {{ compareCubicBezier }}</div>
+        <DotSnapshot
+          class="s-demo_snapshot"
+          :value="compareCubicBezier"
+          :duration="duration"
+          :repeat="repeat"
+        />
+      </div>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
-import { createComponent, SetupContext, watch } from '@vue/composition-api'
-import anime from 'animejs'
-
+import { createComponent, ref, onMounted, onUnmounted } from '@vue/composition-api'
 import DotSnapshot from '@/components/DotSnapshot.vue'
-import demo from '@/plugins/demo'
-import { IDemoProps } from '../types'
+import eventemitter from '@/plugins/eventemitter'
+import { nextTick, sleep } from '@/utils'
+import { DEFAULT_CUBIC, DEFAULT_COMPARE_CUBIC, DEFAULT_PREVIEW_DURATION, DEFAULT_PREVIEW_REPEAT } from '@/constants'
+import { IDemoProps } from '@/types'
 
-export default createComponent({
+export default createComponent<IDemoProps>({
   name: 'DemoSnapshot',
   components: {
     DotSnapshot
@@ -38,21 +42,48 @@ export default createComponent({
   props: {
     cubicBezier: {
       type: Array,
-      required: true
+      required: true,
+      default () {
+        return DEFAULT_CUBIC
+      }
     },
     compareCubicBezier: {
       type: Array,
-      required: true
+      required: true,
+      default () {
+        return DEFAULT_COMPARE_CUBIC
+      }
     },
     duration: {
       type: Number,
       required: true,
-      default: 1000
+      default: DEFAULT_PREVIEW_DURATION
     },
     repeat: {
       type: Boolean,
       required: true,
-      default: true
+      default: DEFAULT_PREVIEW_REPEAT
+    }
+  },
+  setup (props) {
+    const isActive = ref(true)
+
+    const onFocusRun = async () => {
+      isActive.value = false
+      await sleep(250)
+      isActive.value = true
+    }
+
+    onMounted(() => {
+      eventemitter.on('demo-focus-run', onFocusRun)
+    })
+
+    onUnmounted(() => {
+      eventemitter.removeListener('demo-focus-run', onFocusRun)
+    })
+
+    return {
+      isActive
     }
   }
 })
@@ -69,11 +100,11 @@ export default createComponent({
   justify-content: center;
   align-items: center;
   flex-flow: column;
-  padding-bottom: var(--size-40);
+  padding-bottom: var(--size-60);
 }
 
 .s-demo_block {
-  margin-bottom: var(--size-40);
+  margin-bottom: var(--size-60);
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--size-30);
@@ -84,12 +115,11 @@ export default createComponent({
 }
 
 .s-demo_title {
-  font-weight: var(--font-weight-bold);
   margin-bottom: var(--size-20);
 }
 
 .s-demo_snapshot {
   width: 100%;
-  height: 3rem;
+  height: 3.5rem;
 }
 </style>

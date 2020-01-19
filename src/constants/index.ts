@@ -6,3 +6,7 @@ export const THEMES = {
 }
 
 export const DEFAULT_CUBIC = [1, 0, 0, 1]
+export const DEFAULT_COMPARE_CUBIC = [0, 0, 1, 1]
+
+export const DEFAULT_PREVIEW_DURATION = 1000
+export const DEFAULT_PREVIEW_REPEAT = true
