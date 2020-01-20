@@ -51,22 +51,20 @@
 </template>
 
 <script lang="ts">
-import { createComponent, SetupContext, inject, computed, Ref, reactive } from '@vue/composition-api'
+import { createComponent, inject, computed, Ref, reactive } from '@vue/composition-api'
 import { THEME_SYMBOL, THEME_DEFAULT, THEMES } from '@/constants'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
-
-type TPoint2D = {
-  [key in 'x' | 'y'] : number
-}
+import useStore from '@/plugins/store'
+import { TPoint2D } from '@/types'
 
 export default createComponent({
   name: 'Header',
   components: {
     CarbonIcon
   },
-  setup (props, { emit, root: { $store } }:SetupContext) {
+  setup (props, { emit }) {
     const theme = inject(THEME_SYMBOL, THEME_DEFAULT)
-    const store = $store.generatorStore
+    const store = useStore('generatorStore')
     const cubicBezier = store.getters.cubicBezier
 
     const state = reactive({

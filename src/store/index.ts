@@ -1,7 +1,8 @@
-import generator from './generator'
-import snackbar from './snackbar'
+import generator from '@/store/generator'
+import snackbar from '@/store/snackbar'
+import { IStore } from '@/types'
 
-export const store = () => {
+export const store = () :IStore => {
   return {
     generatorStore: generator(),
     snackbar: snackbar()

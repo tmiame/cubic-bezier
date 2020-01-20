@@ -9,6 +9,7 @@
 import { createComponent, ref, provide } from '@vue/composition-api'
 import { THEME_SYMBOL } from '@/constants'
 import useColorScheme from '@/plugins/colorscheme'
+import { provideStore } from '@/plugins/store'
 import FApp from '@/components/flexible/FApp.vue'
 import Header from '@/components/base/Header.vue'
 
@@ -17,10 +18,11 @@ export default createComponent({
     FApp,
     Header
   },
-  setup () {
+  setup (props, context) {
     const { colorscheme, onToggleColorscheme } = useColorScheme()
 
     provide(THEME_SYMBOL, colorscheme)
+    provideStore(context)
 
     return {
       colorscheme,

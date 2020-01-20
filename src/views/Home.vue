@@ -59,7 +59,6 @@
 import {
   createComponent,
   watch,
-  SetupContext,
   ref
 } from '@vue/composition-api'
 
@@ -70,6 +69,7 @@ import Output from '@/components/generator/Output.vue'
 import Actions from '@/components/generator/Actions.vue'
 import useReplaceHistory from '@/plugins/replaceHistory'
 import useFavicon from '@/plugins/favicon'
+import useStore from '@/plugins/store'
 import { URL_PARAM_SEPARATED } from '@/constants'
 import { TCubic } from '@/types'
 
@@ -82,8 +82,8 @@ export default createComponent({
     Preview,
     Actions
   },
-  setup (props, { root }:SetupContext) {
-    const store = root.$store.generatorStore
+  setup (props) {
+    const store = useStore('generatorStore')
     const cubicBezier = store.getters.cubicBezier
     const compareCubicBezier = store.getters.compareCubicBezier
     const editorType = ref('current')

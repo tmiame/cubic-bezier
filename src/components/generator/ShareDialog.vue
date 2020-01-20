@@ -64,11 +64,11 @@ export default createComponent({
     const exportCamel:RefType<HTMLInputElement|null> = ref(null)
 
     const valueHyphen = computed(() => {
-      const query = getSearchParamsToString({ cubicBezier: cubicBezier.value }, '')
+      const query = getSearchParamsToString({ cubicBezier: cubicBezier.value })
       return `https://cubic-bezier.web.app/${query}`
     })
     const valueCamel = computed(() => {
-      const query = getSearchParamsToString({ cubicBezier: cubicBezier.value, compareCubicBezier: compareCubicBezier.value }, '')
+      const query = getSearchParamsToString({ cubicBezier: cubicBezier.value, compareCubicBezier: compareCubicBezier.value })
       return `https://cubic-bezier.web.app/${query}`
     })
 

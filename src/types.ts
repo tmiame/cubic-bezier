@@ -35,3 +35,11 @@ export interface IDemoStyle {
   name: string
   component: string
 }
+
+// Store
+export interface IStore {
+  generatorStore: any,
+  snackbar: any
+}
+
+export type TStoreModule = 'generatorStore' | 'snackbar'
