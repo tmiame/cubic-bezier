@@ -87,13 +87,13 @@ export default createComponent({
     const cubicBezier = store.getters.cubicBezier
     const compareCubicBezier = store.getters.compareCubicBezier
     const editorType = ref('current')
-    const { onReplaceState, getURLHash } = useReplaceHistory()
+    const { onReplaceState, getURLParams } = useReplaceHistory()
     const { changeFavicon } = useFavicon()
 
     changeFavicon(cubicBezier.value)
 
     const getInitURLHash = () => {
-      const { currentMatch, compareMatch } = getURLHash()
+      const { currentMatch, compareMatch } = getURLParams()
 
       if (currentMatch) {
         const p = currentMatch[0].split(URL_PARAM_SEPARATED).map(Number)

@@ -36,6 +36,7 @@ import {
 import Button from '@/components/base/Button.vue'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
 import useClipboard from '@/plugins/clipboard'
+import useReplaceHistory from '@/plugins/replaceHistory'
 import useSnackbar from '@/plugins/snackbar'
 import { ESnackbarType } from '@/types'
 
@@ -53,18 +54,22 @@ export default createComponent({
   setup (props, { emit, root: { $store } }) {
     const store = $store.generatorStore
     const cubicBezier = store.getters.cubicBezier
+    const compareCubicBezier = store.getters.compareCubicBezier
 
     const { onCopy: onCopyText, copyText } = useClipboard()
+    const { getSearchParamsToString } = useReplaceHistory()
     const { addSnackbar } = useSnackbar()
 
     const exportHyphen:RefType<HTMLInputElement|null> = ref(null)
     const exportCamel:RefType<HTMLInputElement|null> = ref(null)
 
     const valueHyphen = computed(() => {
-      return `${window.location.host}/?c=${cubicBezier.value}`
+      const query = getSearchParamsToString({ cubicBezier: cubicBezier.value }, '')
+      return `https://cubic-bezier.web.app/${query}`
     })
     const valueCamel = computed(() => {
-      return `${window.location.host}/?c=${cubicBezier.value}&c2=${cubicBezier.value}`
+      const query = getSearchParamsToString({ cubicBezier: cubicBezier.value, compareCubicBezier: compareCubicBezier.value }, '')
+      return `https://cubic-bezier.web.app/${query}`
     })
 
     const onSelectCopyText = (type:EExportType) => {

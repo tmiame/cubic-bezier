@@ -4,7 +4,7 @@
       <div
         v-for="item of items"
         :key="item.id"
-        :class="[`--${type}`]"
+        :class="[`--${item.type}`]"
         class="s-snackbar"
       >
         <div class="s-snackbar_inner">

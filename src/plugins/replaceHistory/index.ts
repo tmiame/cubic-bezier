@@ -2,16 +2,41 @@ import { URL_PARAM_SEPARATED } from '@/constants'
 import { TCubic } from '@/types'
 
 export default function useSnackbar () {
-  const onReplaceState = (cubicBezier:TCubic, compareCubicBezier:TCubic) => {
-    const url = new URL(window.location.href)
+  const getSearchParamsToString = (params:{ cubicBezier?:TCubic, compareCubicBezier?:TCubic }) => {
+    const searchParams = new URLSearchParams('')
 
-    url.searchParams.set('c', cubicBezier.join(URL_PARAM_SEPARATED))
-    url.searchParams.set('c2', compareCubicBezier.join(URL_PARAM_SEPARATED))
+    if (params.cubicBezier) {
+      searchParams.set('c', params.cubicBezier.join(URL_PARAM_SEPARATED))
+    }
 
-    window.history.replaceState('', '', `?${url.searchParams.toString()}`)
+    if (params.compareCubicBezier) {
+      searchParams.set('c2', params.compareCubicBezier.join(URL_PARAM_SEPARATED))
+    }
+
+    return `?${searchParams.toString()}`
   }
 
-  const getURLHash = () => {
+  const getURLQueryToString = (params:{ cubicBezier?:TCubic, compareCubicBezier?:TCubic }) => {
+    const url = new URL(window.location.href)
+
+    if (params.cubicBezier) {
+      url.searchParams.set('c', params.cubicBezier.join(URL_PARAM_SEPARATED))
+    }
+
+    if (params.compareCubicBezier) {
+      url.searchParams.set('c2', params.compareCubicBezier.join(URL_PARAM_SEPARATED))
+    }
+
+    return `?${url.searchParams.toString()}`
+  }
+
+  const onReplaceState = (cubicBezier:TCubic, compareCubicBezier:TCubic) => {
+    const query = getURLQueryToString({ cubicBezier, compareCubicBezier })
+
+    window.history.replaceState('', '', query)
+  }
+
+  const getURLParams = () => {
     const url = new URL(window.location.href)
 
     const currentParam = url.searchParams.get('c') || ''
@@ -27,7 +52,9 @@ export default function useSnackbar () {
   }
 
   return {
-    getURLHash,
+    getURLParams,
+    getURLQueryToString,
+    getSearchParamsToString,
     onReplaceState
   }
 }
