@@ -42,6 +42,7 @@
     <nav class="s-header_nav">
       <RouterLink to="/" exact>Editor</RouterLink>
       <RouterLink to="/explore">Explore</RouterLink>
+      <RouterLink to="/search">Search</RouterLink>
     </nav>
     <button class="s-header_mode" @click="onToggleColorscheme">
       <CarbonIcon :name="theme === THEMES.light ? 'darkmode': 'lightmode'" />

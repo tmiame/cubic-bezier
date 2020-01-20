@@ -31,14 +31,14 @@
         :y1="100 + (300 / 10 * i)"
         :y2="100 + (300 / 10 * i)"
       />
-      <!-- <line
+      <line
         class="s-svg_line-2 svg_progressbar_horizontal"
         x1="100"
         x2="400"
         y1="400"
         y2="400"
-        :style="{ animationTimingFunction: `cubic-bezier(${cubicBezier})` }"
-      /> -->
+        :style="{ animationTimingFunction: `cubic-bezier(${outputCubicBezier})` }"
+      />
 
       <!-- tatenorainn -->
       <line
@@ -57,14 +57,14 @@
         :x1="100 + (300 / 10 * i)"
         :x2="100 + (300 / 10 * i)"
       />
-      <!-- <line
+      <line
         class="s-svg_line-2 svg_progressbar_vertical"
         y1="100"
         y2="400"
         x1="100"
         x2="100"
-        :style="{ animationTimingFunction: `cubic-bezier(${cubicBezier})` }"
-      /> -->
+        :style="{ animationTimingFunction: `cubic-bezier(${outputCubicBezier})` }"
+      />
 
       <line
         class="s-svg_baseLine"
@@ -92,6 +92,7 @@
 
       <!-- bezier -->
       <path
+        v-if="compareCubicToPath"
         class="s-svg_bezierLine -compare"
         :d="`M${compareCubicToPath[0].x} ${compareCubicToPath[0].y} C ${compareCubicToPath[1].x} ${compareCubicToPath[1].y}, ${compareCubicToPath[2].x} ${compareCubicToPath[2].y}, ${compareCubicToPath[3].x} ${compareCubicToPath[3].y}`"
       />
@@ -126,6 +127,7 @@
 import {
   createComponent,
   ref,
+  watch,
   computed,
   reactive,
   onMounted,
@@ -144,7 +146,7 @@ type TProps = {
   size: number,
   type: EGeneratorType,
   cubicBezierX: TCubic,
-  compareCubicBezier: TCubic
+  compareCubicBezier: TCubic|boolean
 }
 
 export default createComponent<TProps>({
@@ -166,43 +168,48 @@ export default createComponent<TProps>({
       }
     },
     compareCubicBezier: {
-      type: Array,
-      default () {
-        return DEFAULT_CUBIC
-      }
+      type: [Boolean, Array],
+      default: false
     }
   },
   setup (props, { emit }) {
-    const grabbing:RefType<boolean> = ref(false)
-    const grabbingIndex:RefType<number> = ref(0)
+    const grabbing = ref(false)
+    const grabbingIndex = ref(0)
     const preview:RefType<HTMLElement|null> = ref(null)
     const grab:RefType<HTMLElement|null> = ref(null)
 
     const size = props.size * 0.6
     const min = props.size * 0.2
     const max = props.size * 0.8
-    const path = computed(() :TPoint2D[] => [
+
+    const editCubic = ref(props.cubicBezierX)
+    watch(() => props.cubicBezierX, (val) => {
+      editCubic.value = val
+    })
+
+    const editCubicToPath = computed(():TPoint2D[] => [
       { x: min, y: max },
-      { x: min + (size * props.cubicBezierX[0]), y: max - (size * props.cubicBezierX[1]) },
-      { x: min + (size * props.cubicBezierX[2]), y: max - (size * props.cubicBezierX[3]) },
+      { x: min + (size * editCubic.value[0]), y: max - (size * editCubic.value[1]) },
+      { x: min + (size * editCubic.value[2]), y: max - (size * editCubic.value[3]) },
       { x: max, y: min }
     ])
-    const compareCubicToPath = computed(():TPoint2D[] => [
+
+    const compareCubicToPath = computed(():TPoint2D[]|boolean => Array.isArray(props.compareCubicBezier) && [
       { x: min, y: max },
       { x: min + (size * props.compareCubicBezier[0]), y: max - (size * props.compareCubicBezier[1]) },
       { x: min + (size * props.compareCubicBezier[2]), y: max - (size * props.compareCubicBezier[3]) },
       { x: max, y: min }
     ])
 
-    const cubicBezier = computed(() :TCubic => [
-      normalize(path.value[1].x),
-      normalize(props.size - path.value[1].y),
-      normalize(path.value[2].x),
-      normalize(props.size - path.value[2].y)
+    const outputCubicBezier = computed(():TCubic => [
+      normalize(editCubicToPath.value[1].x),
+      normalize(props.size - editCubicToPath.value[1].y),
+      normalize(editCubicToPath.value[2].x),
+      normalize(props.size - editCubicToPath.value[2].y)
     ])
 
     const normalize = (num:number) :number => {
-      return Math.floor(100 * (num - min) / size) / 100
+      return Math.floor(1000 * (num - min) / size) / 1000
     }
 
     const adjust = (num:number, type:string = 'x') :number => {
@@ -218,7 +225,7 @@ export default createComponent<TProps>({
       }
     }
 
-    const onPointerMove = (e:PointerEvent) :void => {
+    const onPointerMove = (e:PointerEvent) => {
       if (grabbingIndex.value !== 0) {
         const previewElement:HTMLElement = preview.value!
         const { left, top, width, height }:ClientRect = previewElement.getBoundingClientRect()
@@ -229,36 +236,38 @@ export default createComponent<TProps>({
       }
     }
 
-    const onPointerUp = (e:PointerEvent) :void => {
+    const onPointerUp = (e:PointerEvent) => {
       grabbing.value = false
       grabbingIndex.value = 0
     }
 
-    const onPointerDown = (index:number) :void => {
+    const onPointerDown = (index:number) => {
       grabbing.value = true
       grabbingIndex.value = index
     }
 
-    const setPosition = (index:number, x:number, y:number) :void => {
-      const newPath = [...path.value]
+    const setPosition = (index:number, x:number, y:number) => {
+      const newPath = [...editCubicToPath.value]
       newPath[index] = {
         x: adjust(x, 'x'),
         y: adjust(y, 'y')
       }
 
-      const newCubicBezier = [
+      const newCubicBezier:TCubic = [
         normalize(newPath[1].x),
         normalize(props.size - newPath[1].y),
         normalize(newPath[2].x),
         normalize(props.size - newPath[2].y)
       ]
 
+      editCubic.value = newCubicBezier
+
       emit('input', newCubicBezier)
     }
 
     onMounted(() => {
-      document.addEventListener('pointermove', onPointerMove)
-      document.addEventListener('pointerup', onPointerUp)
+      document.addEventListener('pointermove', onPointerMove, { passive: true })
+      document.addEventListener('pointerup', onPointerUp, { passive: true })
     })
 
     onUnmounted(() => {
@@ -267,14 +276,14 @@ export default createComponent<TProps>({
     })
 
     return {
-      path,
+      path: editCubicToPath,
       compareCubicToPath,
       grab,
       grabbing,
       grabbingIndex,
       preview,
       onPointerDown,
-      cubicBezier
+      outputCubicBezier
     }
   }
 })

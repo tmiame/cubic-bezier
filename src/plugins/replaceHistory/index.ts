@@ -1,14 +1,29 @@
+import { URL_PARAM_SEPARATED } from '@/constants'
+import { TCubic } from '@/types'
+
 export default function useSnackbar () {
-  const onReplaceState = (cubicBezier:number[]) => {
-    window.history.replaceState('', '', `#${cubicBezier.join(',')}`)
+  const onReplaceState = (cubicBezier:TCubic, compareCubicBezier:TCubic) => {
+    const url = new URL(window.location.href)
+
+    url.searchParams.set('c', cubicBezier.join(URL_PARAM_SEPARATED))
+    url.searchParams.set('c2', compareCubicBezier.join(URL_PARAM_SEPARATED))
+
+    window.history.replaceState('', '', `?${url.searchParams.toString()}`)
   }
 
   const getURLHash = () => {
-    const originalHash = window.location.hash
-    const hash:string = originalHash.replace(/#/g, '')
-    const pMatch:string[]|null = hash.match(/^([+-]?[0-9](\.[0-9]{0,2})?),([+-]?[0-9](\.[0-9]{0,2})?),([+-]?[0-9](\.[0-9]{0,2})?),([+-]?[0-9](\.[0-9]{0,2})?)$/g)
+    const url = new URL(window.location.href)
 
-    return pMatch
+    const currentParam = url.searchParams.get('c') || ''
+    const compareParam = url.searchParams.get('c2') || ''
+
+    const currentMatch:string[]|null = currentParam.match(/^([+-]?[0-9](\.[0-9]{0,3})?)_([+-]?[0-9](\.[0-9]{0,3})?)_([+-]?[0-9](\.[0-9]{0,3})?)_([+-]?[0-9](\.[0-9]{0,3})?)$/g)
+    const compareMatch:string[]|null = compareParam.match(/^([+-]?[0-9](\.[0-9]{0,3})?)_([+-]?[0-9](\.[0-9]{0,3})?)_([+-]?[0-9](\.[0-9]{0,3})?)_([+-]?[0-9](\.[0-9]{0,3})?)$/g)
+
+    return {
+      currentMatch,
+      compareMatch
+    }
   }
 
   return {

@@ -69,6 +69,8 @@ import Preview from '@/components/preview/Preview.vue'
 import Output from '@/components/generator/Output.vue'
 import Actions from '@/components/generator/Actions.vue'
 import useReplaceHistory from '@/plugins/replaceHistory'
+import useFavicon from '@/plugins/favicon'
+import { URL_PARAM_SEPARATED } from '@/constants'
 import { TCubic } from '@/types'
 
 export default createComponent({
@@ -86,16 +88,22 @@ export default createComponent({
     const compareCubicBezier = store.getters.compareCubicBezier
     const editorType = ref('current')
     const { onReplaceState, getURLHash } = useReplaceHistory()
+    const { changeFavicon } = useFavicon()
 
-    const getInitURLHash = () :void => {
-      const pMatch = getURLHash()
+    changeFavicon(cubicBezier.value)
 
-      if (!pMatch) {
-        return
+    const getInitURLHash = () => {
+      const { currentMatch, compareMatch } = getURLHash()
+
+      if (currentMatch) {
+        const p = currentMatch[0].split(URL_PARAM_SEPARATED).map(Number)
+        store.actions.updateCubicBezier(p)
       }
 
-      const p = pMatch[0].split(',').map(Number)
-      store.actions.updateCubicBezier(p)
+      if (compareMatch) {
+        const p = compareMatch[0].split(URL_PARAM_SEPARATED).map(Number)
+        store.actions.updateCompareCubicBezier(p)
+      }
     }
 
     getInitURLHash()
@@ -113,7 +121,12 @@ export default createComponent({
     }
 
     watch(() => cubicBezier.value, (newVal) => {
-      onReplaceState(newVal)
+      onReplaceState(newVal, compareCubicBezier.value)
+      changeFavicon(newVal)
+    })
+
+    watch(() => compareCubicBezier.value, (newVal) => {
+      onReplaceState(cubicBezier.value, newVal)
     })
 
     return {
@@ -149,11 +162,10 @@ export default createComponent({
   overflow-anchor: none;
   overscroll-behavior-y: none;
   -webkit-overflow-scrolling: touch;
-  background-color: var(--general-background-b);
+  border-left: 1px solid var(--c-border);
 
   html[dark] & {
     border-left: 1px solid var(--c-border);
-    background-color: transparent;
   }
 }
 
@@ -167,19 +179,14 @@ export default createComponent({
     "view_generator_generator"
     "view_generator_actions"
     "view_compareView";
-  grid-row-gap: var(--size-30);
-  background-color: var(--general-background-a);
-
-  html[dark] & {
-    background-color: transparent;
-  }
+  grid-row-gap: var(--size-25);
 }
 
 .s-view_generator_topbar {
   grid-area: view_generator_topbar;
-  padding-top: var(--size-30);
-  padding-left: var(--size-30);
-  padding-right: var(--size-30);
+  padding-top: var(--size-25);
+  padding-left: var(--size-25);
+  padding-right: var(--size-25);
 }
 
 .s-view_generator_generator {
@@ -189,18 +196,14 @@ export default createComponent({
 
 .s-view_generator_actions {
   grid-area: view_generator_actions;
-  padding-left: var(--size-30);
-  padding-right: var(--size-30);
+  padding-left: var(--size-25);
+  padding-right: var(--size-25);
 }
 
 .s-view_compareView {
   grid-area: view_compareView;
   position: relative;
   overflow-x: hidden;
-
-  html[dark] & {
-    border-top: 1px solid var(--c-border);
-    background-color: transparent;
-  }
+  border-top: 1px solid var(--c-border);
 }
 </style>
