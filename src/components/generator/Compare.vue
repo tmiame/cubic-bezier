@@ -4,13 +4,14 @@
       <div class="swiper-wrapper">
         <Card
           class="swiper-slide s-styles_item"
-          v-for="style of styles"
+          v-for="(style, index) of styles"
           :key="style.id"
           :class="{ '--active': currentStyle.id === style.id }"
           :cubicBezier="style.cubicBezier"
-          @click.native="onChangeStyle(style)"
+          @click.native="onChangeStyle(style, index + 1)"
         />
       </div>
+      <div class="swiper-scrollbar"></div>
     </div>
   </div>
 </template>
@@ -43,8 +44,10 @@ export default createComponent({
   components: {
     Card
   },
-  setup (props, { emit }:SetupContext) {
-    let swiper = null
+  setup (props, { emit, root: { $store } }:SetupContext) {
+    const store = $store.generatorStore
+
+    let swiper:Swiper|null = null
     const swiperElement:RefType<HTMLElement|null> = ref(null)
     const styles:RefType<IDemoStyle[]> = ref([
       {
@@ -85,15 +88,23 @@ export default createComponent({
     ])
     const currentStyle = ref(styles.value[0])
 
-    const onChangeStyle = (style:IDemoStyle) => {
+    const onChangeStyle = (style:IDemoStyle, index: number) => {
       currentStyle.value = style
+      swiper!.slideTo(index)
     }
 
     const initSwiper = () => {
       swiper = new Swiper(swiperElement.value!, {
+        speed: 200,
         spaceBetween: 16,
         slidesOffsetAfter: 100,
-        slidesPerView: 4
+        slidesPerView: 5,
+        slidesPerGroup: 4,
+        mousewheel: true,
+        scrollbar: {
+          el: '.swiper-scrollbar',
+          draggable: true
+        }
       })
     }
 

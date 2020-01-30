@@ -1,18 +1,32 @@
 <template>
   <div class="s-actions">
-    <Button type="button" class="u-mx-2" @click.native="onOpenDialog">
+    <Button type="button" class="u-mx-0" @click.native="onOpenCopyDialog">
       <template #beforeIcon>
         <CarbonIcon name="copy" />
       </template>
       Copy
     </Button>
 
-    <!-- <Button type="button" fab class="u-ml-auto u-mr-0">
-      <CarbonIcon name="settings-adjust" />
-    </Button> -->
+    <Button type="button" class="u-mx-2" @click.native="onOpenShareDialog">
+      <template #beforeIcon>
+        <CarbonIcon name="link" />
+      </template>
+      Share
+    </Button>
+
+    <Button type="button" class="u-ml-auto u-mr-0" @click.native="onCompareEdit">
+      <template #beforeIcon>
+        <CarbonIcon name="compare" />
+      </template>
+      Compare
+    </Button>
 
     <FDialog v-model="dialog">
-      <CopyDialog @close="onCopyDialogClose" />
+      <CopyDialog @close="onCloseCopyDialog" />
+    </FDialog>
+
+    <FDialog v-model="shareDialogModel">
+      <ShareDialog @close="onCloseShareDialog" />
     </FDialog>
   </div>
 </template>
@@ -20,43 +34,71 @@
 <script lang="ts">
 import {
   createComponent,
-  ref,
-  watch,
-  Ref as RefType,
-  SetupContext
+  ref
 } from '@vue/composition-api'
 
 import FDialog from '@/components/flexible/FDialog.vue'
 import CopyDialog from '@/components/generator/CopyDialog.vue'
+import ShareDialog from '@/components/generator/ShareDialog.vue'
 import Button from '@/components/base/Button.vue'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
+import { DEFAULT_CUBIC } from '@/constants'
+import { TCubic } from '@/types'
 
-export default createComponent({
+type TProps = {
+  cubicBezier: TCubic
+}
+
+export default createComponent<TProps>({
   name: 'GeneratorActions',
+  props: {
+    cubicBezier: {
+      type: Array,
+      required: true,
+      default () {
+        return DEFAULT_CUBIC
+      }
+    }
+  },
   components: {
     FDialog,
     CopyDialog,
+    ShareDialog,
     Button,
     CarbonIcon
   },
-  setup (props, { root: { $store } }:SetupContext) {
-    const store = $store.generatorStore
-    const cubicBezier = store.getters.cubicBezier
+  setup (props, { emit }) {
     const dialog = ref(false)
+    const shareDialogModel = ref(false)
 
-    const onOpenDialog = () => {
+    const onOpenCopyDialog = () => {
       dialog.value = true
     }
 
-    const onCopyDialogClose = () => {
+    const onCloseCopyDialog = () => {
       dialog.value = false
+    }
+
+    const onOpenShareDialog = () => {
+      shareDialogModel.value = true
+    }
+
+    const onCloseShareDialog = () => {
+      shareDialogModel.value = false
+    }
+
+    const onCompareEdit = () => {
+      emit('compare-edit')
     }
 
     return {
       dialog,
-      onOpenDialog,
-      onCopyDialogClose,
-      cubicBezier
+      shareDialogModel,
+      onOpenCopyDialog,
+      onCloseCopyDialog,
+      onOpenShareDialog,
+      onCloseShareDialog,
+      onCompareEdit
     }
   }
 })

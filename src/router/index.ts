@@ -1,21 +1,21 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
+import VueRouter, { RouterOptions, RouteConfig } from 'vue-router'
 import Home from '@/views/Home.vue'
-import About from '@/views/About.vue'
+import Search from '@/views/Search.vue'
 import Explore from '@/views/Explore.vue'
 
 Vue.use(VueRouter)
 
-const routes = [
+const routes = <Array<RouteConfig>>[
   {
     path: '/',
     name: 'home',
     component: Home
   },
   {
-    path: '/about',
-    name: 'about',
-    component: About
+    path: '/search',
+    name: 'search',
+    component: Search
   },
   {
     path: '/explore',
@@ -24,7 +24,7 @@ const routes = [
   }
 ]
 
-const router = new VueRouter({
+const router = new VueRouter(<RouterOptions>{
   mode: 'history',
   base: process.env.BASE_URL || '/',
   routes

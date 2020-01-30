@@ -1,14 +1,57 @@
 <template>
   <div class="s-view">
     <div class="s-view_generator">
-      <Output class="s-view_generator_topbar" :cubicBezier="cubicBezier"/>
-      <div class="s-view_generator_generator">
-        <Generator :cubicBezierX="cubicBezier" :compareCubicBezier="compareCubicBezier" />
-      </div>
-      <Actions class="s-view_generator_actions" :cubicBezier="cubicBezier"/>
-      <GeneratorCompare class="s-view_compareView" />
+      <template v-if="editorType === 'current'">
+        <Output
+          class="s-view_generator_topbar"
+          :cubicBezier="cubicBezier"
+          @input="onUpdateCubicBezier"
+        />
+        <div class="s-view_generator_generator">
+          <Generator
+            type="current"
+            :cubicBezierX="cubicBezier"
+            :compareCubicBezier="compareCubicBezier"
+            @input="onUpdateCubicBezier"
+          />
+        </div>
+        <Actions
+          class="s-view_generator_actions"
+          :cubicBezier="cubicBezier"
+          @compare-edit="onEditCompare"
+        />
+      </template>
+      <template v-else>
+        <Output
+          class="s-view_generator_topbar"
+          :cubicBezier="compareCubicBezier"
+          @input="onUpdateCompareCubicBezier"
+        />
+        <div class="s-view_generator_generator">
+          <Generator
+            type="compare"
+            :cubicBezierX="compareCubicBezier"
+            :compareCubicBezier="cubicBezier"
+            @input="onUpdateCompareCubicBezier"
+          />
+        </div>
+        <Actions
+          class="s-view_generator_actions"
+          :cubicBezier="compareCubicBezier"
+          @compare-edit="onEditCompare"
+        />
+        <GeneratorCompare
+          class="s-view_compareView"
+          @edit="onEditCompare"
+        />
+      </template>
     </div>
-    <Preview class="s-view_secondaryView" :cubicBezier="cubicBezier" :compareCubicBezier="compareCubicBezier" />
+
+    <Preview
+      class="s-view_secondaryView"
+      :cubicBezier="cubicBezier"
+      :compareCubicBezier="compareCubicBezier"
+    />
   </div>
 </template>
 
@@ -16,11 +59,8 @@
 import {
   createComponent,
   watch,
-  inject,
-  SetupContext
+  ref
 } from '@vue/composition-api'
-
-import { THEME_SYMBOL, THEME_DEFAULT } from '@/constants'
 
 import Generator from '@/components/generator/Generator.vue'
 import GeneratorCompare from '@/components/generator/Compare.vue'
@@ -28,6 +68,10 @@ import Preview from '@/components/preview/Preview.vue'
 import Output from '@/components/generator/Output.vue'
 import Actions from '@/components/generator/Actions.vue'
 import useReplaceHistory from '@/plugins/replaceHistory'
+import useFavicon from '@/plugins/favicon'
+import useStore from '@/plugins/store'
+import { URL_PARAM_SEPARATED } from '@/constants'
+import { TCubic } from '@/types'
 
 export default createComponent({
   name: 'Home',
@@ -38,34 +82,60 @@ export default createComponent({
     Preview,
     Actions
   },
-  setup (props, { root }:SetupContext) {
-    const theme = inject(THEME_SYMBOL, THEME_DEFAULT)
-    const store = root.$store.generatorStore
+  setup (props) {
+    const store = useStore('generatorStore')
     const cubicBezier = store.getters.cubicBezier
     const compareCubicBezier = store.getters.compareCubicBezier
-    const { onReplaceState, getURLHash } = useReplaceHistory()
+    const editorType = ref('current')
+    const { onReplaceState, getURLParams } = useReplaceHistory()
+    const { changeFavicon } = useFavicon()
 
-    const getInitURLHash = () :void => {
-      const pMatch = getURLHash()
+    changeFavicon(cubicBezier.value)
 
-      if (!pMatch) {
-        return
+    const getInitURLHash = () => {
+      const { currentMatch, compareMatch } = getURLParams()
+
+      if (currentMatch) {
+        const p = currentMatch[0].split(URL_PARAM_SEPARATED).map(Number)
+        store.actions.updateCubicBezier(p)
       }
 
-      const p = pMatch[0].split(',').map(Number)
-      store.actions.updateCubicBezier(p)
+      if (compareMatch) {
+        const p = compareMatch[0].split(URL_PARAM_SEPARATED).map(Number)
+        store.actions.updateCompareCubicBezier(p)
+      }
     }
 
     getInitURLHash()
 
+    const onUpdateCubicBezier = (value:TCubic) => {
+      store.actions.updateCubicBezier(value)
+    }
+
+    const onUpdateCompareCubicBezier = (value:TCubic) => {
+      store.actions.updateCompareCubicBezier(value)
+    }
+
+    const onEditCompare = () => {
+      editorType.value = editorType.value === 'compare' ? 'current' : 'compare'
+    }
+
     watch(() => cubicBezier.value, (newVal) => {
-      onReplaceState(newVal)
+      onReplaceState(newVal, compareCubicBezier.value)
+      changeFavicon(newVal)
+    })
+
+    watch(() => compareCubicBezier.value, (newVal) => {
+      onReplaceState(cubicBezier.value, newVal)
     })
 
     return {
-      theme,
+      editorType,
       cubicBezier,
-      compareCubicBezier
+      compareCubicBezier,
+      onUpdateCubicBezier,
+      onUpdateCompareCubicBezier,
+      onEditCompare
     }
   }
 })
@@ -92,11 +162,10 @@ export default createComponent({
   overflow-anchor: none;
   overscroll-behavior-y: none;
   -webkit-overflow-scrolling: touch;
-  background-color: var(--general-background-b);
+  border-left: 1px solid var(--c-border);
 
   html[dark] & {
     border-left: 1px solid var(--c-border);
-    background-color: transparent;
   }
 }
 
@@ -110,19 +179,14 @@ export default createComponent({
     "view_generator_generator"
     "view_generator_actions"
     "view_compareView";
-  grid-row-gap: var(--size-30);
-  background-color: var(--general-background-a);
-
-  html[dark] & {
-    background-color: transparent;
-  }
+  grid-row-gap: var(--size-25);
 }
 
 .s-view_generator_topbar {
   grid-area: view_generator_topbar;
-  padding-top: var(--size-30);
-  padding-left: var(--size-30);
-  padding-right: var(--size-30);
+  padding-top: var(--size-25);
+  padding-left: var(--size-25);
+  padding-right: var(--size-25);
 }
 
 .s-view_generator_generator {
@@ -132,18 +196,14 @@ export default createComponent({
 
 .s-view_generator_actions {
   grid-area: view_generator_actions;
-  padding-left: var(--size-30);
-  padding-right: var(--size-30);
+  padding-left: var(--size-25);
+  padding-right: var(--size-25);
 }
 
 .s-view_compareView {
   grid-area: view_compareView;
   position: relative;
   overflow-x: hidden;
-
-  html[dark] & {
-    border-top: 1px solid var(--c-border);
-    background-color: transparent;
-  }
+  border-top: 1px solid var(--c-border);
 }
 </style>

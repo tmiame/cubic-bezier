@@ -29,13 +29,11 @@
 import {
   createComponent,
   ref,
-  Ref as RefType,
-  SetupContext
+  Ref as RefType
 } from '@vue/composition-api'
-import {
-  nextTick
-} from '@/utils'
+
 import eventemitter from '@/plugins/eventemitter'
+import { nextTick } from '@/utils'
 
 import PreviewToolbar from '@/components/preview/PreviewToolbar.vue'
 import PreviewStyles from '@/components/preview/PreviewStyles.vue'
@@ -43,15 +41,15 @@ import DemoVueLogo from '@/components/preview/demo/VueLogo.vue'
 import DemoDialog from '@/components/preview/demo/Dialog.vue'
 import DemoSnapshot from '@/components/preview/demo/Snapshot.vue'
 
-import { TCubic } from '../generator/types'
-import { IDemoStyle } from './types'
+import { DEFAULT_CUBIC, DEFAULT_COMPARE_CUBIC, DEFAULT_PREVIEW_DURATION, DEFAULT_PREVIEW_REPEAT } from '@/constants'
+import { TCubic, IDemoStyle } from '@/types'
 
 type PropType = {
   cubicBezier: TCubic
   compareCubicBezier: TCubic
 }
 
-export default createComponent({
+export default createComponent<PropType>({
   name: 'Preview',
   components: {
     PreviewToolbar,
@@ -64,22 +62,22 @@ export default createComponent({
     cubicBezier: {
       type: Array,
       default () {
-        return [1, 0, 0, 1]
+        return DEFAULT_CUBIC
       }
     },
     compareCubicBezier: {
       type: Array,
       default () {
-        return [0, 0, 1, 1]
+        return DEFAULT_COMPARE_CUBIC
       }
     }
   },
-  setup (props:PropType, { emit }:SetupContext) {
-    const duration:RefType<number> = ref(1000)
-    const repeat:RefType<boolean> = ref(false)
+  setup (props, { emit }) {
+    const duration = ref(DEFAULT_PREVIEW_DURATION)
+    const repeat = ref(DEFAULT_PREVIEW_REPEAT)
     const previewStyle:RefType<IDemoStyle> = ref({})
 
-    const onChangeDuration = (newDurationValue:number) :void => {
+    const onChangeDuration = (newDurationValue:number) => {
       duration.value = newDurationValue
 
       nextTick(() => {
@@ -87,15 +85,15 @@ export default createComponent({
       })
     }
 
-    const onChangeRepeat = (newValue:boolean) :void => {
+    const onChangeRepeat = (newValue:boolean) => {
       repeat.value = newValue
     }
 
-    const onChangeStyle = (style:IDemoStyle) :void => {
+    const onChangeStyle = (style:IDemoStyle) => {
       previewStyle.value = style
     }
 
-    const onFocusRun = () :void => {
+    const onFocusRun = () => {
       eventemitter.emit('demo-focus-run')
     }
 

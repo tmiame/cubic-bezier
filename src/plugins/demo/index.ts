@@ -16,7 +16,7 @@ type StateType = {
 }
 
 export default function useClipboard () {
-  const animeRepeat:RefType<boolean> = ref(true)
+  const animeRepeat = ref(true)
   const animeCubicBezier:RefType<number[]> = ref([0, 0, 0, 0])
   const animeTarget:RefType<HTMLCanvasElement|null> = ref(null)
   const animeValues:RefType<anime.AnimeParams> = ref({
@@ -27,18 +27,19 @@ export default function useClipboard () {
     animeInstance: null
   })
 
-  const initAnime = () :void => {
+  const initAnime = () => {
     destroyAnime()
     nextTick(createAnime)
   }
 
-  const createAnime = () :void => {
+  const createAnime = () => {
     const baseParams:anime.AnimeParams = {
       targets: animeTarget.value,
       delay: 250,
       endDelay: 1500,
       easing: `cubicBezier(${animeCubicBezier.value})`,
-      complete: checkRepeat
+      begin: onAnimeBegin,
+      complete: onAnimeComplete
     }
     state.animeInstance = anime({
       ...baseParams,
@@ -46,18 +47,27 @@ export default function useClipboard () {
     })
   }
 
-  const destroyAnime = () :void => {
+  const destroyAnime = () => {
     if (state.animeInstance) {
       anime.remove(animeTarget.value)
       state.animeInstance = null
     }
   }
 
-  const focusRun = () :void => {
+  const onAnimeBegin = () => {
+    eventemitter.emit('demo-begin')
+  }
+
+  const onAnimeComplete = () => {
+    eventemitter.emit('demo-complete')
+    checkRepeat()
+  }
+
+  const focusRun = () => {
     initAnime()
   }
 
-  const checkRepeat = () :void => {
+  const checkRepeat = () => {
     if (!animeRepeat.value) {
       destroyAnime()
     } else {

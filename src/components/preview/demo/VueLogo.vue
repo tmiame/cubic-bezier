@@ -1,23 +1,28 @@
 <template>
   <div class="s-demo">
-    <div ref="animeTarget" class="s-demo_icon">
-      <img alt="Vue logo" src="@/assets/logo.png">
+    <div class="s-demo_item">
+      <div class="s-demo_title">Current</div>
+      <div ref="animeTarget" class="s-demo_icon">
+        <img alt="Vue logo" src="@/assets/logo.png">
+      </div>
     </div>
-    <div ref="compareAnimeTarget" class="s-demo_icon">
-      <img alt="Vue logo" src="@/assets/logo.png">
+    <div class="s-demo_item">
+      <div class="s-demo_title">Compare</div>
+      <div ref="compareAnimeTarget" class="s-demo_icon">
+        <img alt="Vue logo" src="@/assets/logo.png">
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { createComponent, SetupContext, watch } from '@vue/composition-api'
+import { createComponent, watch } from '@vue/composition-api'
 import anime from 'animejs'
-import eventemitter from '@/plugins/eventemitter'
 import demo from '@/plugins/demo'
 import { nextTick } from '@/utils'
-import { IDemoProps } from '../types'
+import { IDemoProps } from '@/types'
 
-export default createComponent({
+export default createComponent<IDemoProps>({
   name: 'DemoVueLogo',
   props: {
     cubicBezier: {
@@ -37,7 +42,7 @@ export default createComponent({
       required: true
     }
   },
-  setup (props: IDemoProps, { emit, listeners }:SetupContext) {
+  setup (props) {
     const {
       animeTarget,
       animeRepeat,
@@ -54,7 +59,7 @@ export default createComponent({
 
     const animeParams = {
       duration: props.duration,
-      scale: [0, 2],
+      scale: [0, 1],
       opacity: [0, 1]
     }
 
@@ -97,6 +102,8 @@ export default createComponent({
 
 <style lang="scss" scoped>
 .s-demo {
+  padding-left: var(--size-60);
+  padding-right: var(--size-60);
   position: absolute;
   top: 0;
   left: 0;
@@ -107,11 +114,16 @@ export default createComponent({
   align-items: center;
 }
 
+.s-demo_item {
+  text-align: center;
+  width: 50%;
+}
+
 .s-demo_icon {
-  width: 8rem;
-  height: 8rem;
+  width: 70%;
+  height: 70%;
   pointer-events: none;
-  margin: 0 6rem;
+  margin: 0 auto;
 
   img {
     width: 100%;

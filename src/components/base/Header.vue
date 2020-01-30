@@ -42,6 +42,7 @@
     <nav class="s-header_nav">
       <RouterLink to="/" exact>Editor</RouterLink>
       <RouterLink to="/explore">Explore</RouterLink>
+      <RouterLink to="/search">Search</RouterLink>
     </nav>
     <button class="s-header_mode" @click="onToggleColorscheme">
       <CarbonIcon :name="theme === THEMES.light ? 'darkmode': 'lightmode'" />
@@ -50,22 +51,20 @@
 </template>
 
 <script lang="ts">
-import { createComponent, SetupContext, inject, computed, Ref, reactive } from '@vue/composition-api'
+import { createComponent, inject, computed, Ref, reactive } from '@vue/composition-api'
 import { THEME_SYMBOL, THEME_DEFAULT, THEMES } from '@/constants'
 import CarbonIcon from '@/components/base/CarbonIcon.vue'
-
-type TPoint2D = {
-  [key in 'x' | 'y'] : number
-}
+import useStore from '@/plugins/store'
+import { TPoint2D } from '@/types'
 
 export default createComponent({
   name: 'Header',
   components: {
     CarbonIcon
   },
-  setup (props, { emit, root: { $store } }:SetupContext) {
+  setup (props, { emit }) {
     const theme = inject(THEME_SYMBOL, THEME_DEFAULT)
-    const store = $store.generatorStore
+    const store = useStore('generatorStore')
     const cubicBezier = store.getters.cubicBezier
 
     const state = reactive({
@@ -129,10 +128,7 @@ export default createComponent({
   padding-right: var(--size-30);
   height: var(--header-height);
   z-index: var(--zindex-fixed);
-
-  html[dark] & {
-    border-bottom: 1px solid var(--c-border);
-  }
+  border-bottom: 1px solid var(--c-border);
 }
 
 .s-header_logo {

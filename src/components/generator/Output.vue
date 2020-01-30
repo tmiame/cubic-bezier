@@ -61,11 +61,16 @@ import {
   createComponent,
   ref,
   watch,
-  Ref as RefType,
-  SetupContext
+  Ref as RefType
 } from '@vue/composition-api'
 
 import { sliceMaxLength } from '@/utils'
+import { DEFAULT_CUBIC } from '@/constants'
+import { TCubic } from '@/types'
+
+type TProps = {
+  cubicBezier: TCubic
+}
 
 export enum ECubicBezierType {
   P1 = 1,
@@ -74,13 +79,19 @@ export enum ECubicBezierType {
   P4 = 4
 }
 
-export default createComponent({
+export default createComponent<TProps>({
   name: 'GeneratorHeader',
-
-  setup (props, { root: { $store } }:SetupContext) {
-    const store = $store.generatorStore
-    const cubicBezier = store.getters.cubicBezier
-    const cubicBezierEditable:RefType<number[]> = ref(store.cubicBezier.value)
+  props: {
+    cubicBezier: {
+      type: Array,
+      required: true,
+      default () {
+        return DEFAULT_CUBIC
+      }
+    }
+  },
+  setup (props, { emit }) {
+    const cubicBezierEditable = ref(props.cubicBezier)
 
     const p1:RefType<HTMLElement|null> = ref(null)
     const p2:RefType<HTMLElement|null> = ref(null)
@@ -102,8 +113,6 @@ export default createComponent({
           p4.value!.blur()
           break
       }
-
-      store.actions.updateCubicBezier(cubicBezierEditable.value)
     }
 
     const onInput = (type:ECubicBezierType) => {
@@ -121,10 +130,12 @@ export default createComponent({
           cubicBezierEditable.value[3] = sliceMaxLength(Math.min(2, Math.max(cubicBezierEditable.value[3], -2)), 4)
           break
       }
+
+      emit('input', cubicBezierEditable.value)
     }
 
-    watch(() => {
-      cubicBezierEditable.value = cubicBezier.value
+    watch(() => props.cubicBezier, (value) => {
+      cubicBezierEditable.value = value
     })
 
     return {
@@ -193,7 +204,6 @@ export default createComponent({
 }
 
 .s-form-textbox {
-  box-shadow: 0 1px 3px 0 rgba(14, 30, 37, 0.05);
   color: currentColor;
   background-color: var(--c-btn);
   border: 1px solid var(--c-btn-border);

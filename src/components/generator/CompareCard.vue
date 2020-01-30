@@ -9,11 +9,14 @@
 
 <script lang="ts">
 import { createComponent, computed, SetupContext } from '@vue/composition-api'
-
 import BezierLine from '@/components/HelloWorld.vue'
-import { TCubic } from './types'
+import { TCubic } from '@/types'
 
-export default createComponent({
+type TProps = {
+  cubicBezier: TCubic
+}
+
+export default createComponent<TProps>({
   name: 'CompareCard',
   components: {
     BezierLine
@@ -24,14 +27,14 @@ export default createComponent({
       required: true
     }
   },
-  setup (props, { root: { $store } }:SetupContext) {
+  setup ({ cubicBezier }, { root: { $store } }:SetupContext) {
     const store = $store.generatorStore
     const cubicBezierToString = computed(() => {
-      return `${props.cubicBezier.join(',')}`
+      return `${cubicBezier.join(',')}`
     })
 
     const onSetCompare = () => {
-      store.actions.updateCompareCubicBezier(props.cubicBezier)
+      store.actions.updateCompareCubicBezier(cubicBezier)
     }
 
     return {
@@ -58,10 +61,10 @@ export default createComponent({
 
 .s-card_bezierLine {
   position: absolute;
-  top: -15%;
-  left: -15%;
-  width: 130%;
-  height: 130%;
+  // top: -15%;
+  // left: -15%;
+  // width: 130%;
+  // height: 130%;
 }
 
 .s-card_title {

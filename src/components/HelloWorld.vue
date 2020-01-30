@@ -85,17 +85,14 @@ import {
   onMounted,
   Ref
 } from '@vue/composition-api'
+import { TCubic, TPoint2D } from '@/types'
 
-type PropType = {
-  value: [number, number, number, number],
+type TProps = {
+  value: TCubic,
   size: number
 }
 
-type TPoint2D = {
-  [key in 'x' | 'y'] : number
-}
-
-export default createComponent({
+export default createComponent<TProps>({
   props: {
     value: {
       type: Array,
@@ -104,7 +101,7 @@ export default createComponent({
       }
     }
   },
-  setup (props: PropType, context: any) {
+  setup (props, context) {
     const state = reactive({
       size: 200,
       offset: 50

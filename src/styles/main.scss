@@ -10,6 +10,13 @@ html {
   --space-4: 16px;
   --space-5: 20px;
 
+  --space-n: -4px;
+  --space-n1: -4px;
+  --space-n2: -8px;
+  --space-n3: -12px;
+  --space-n4: -16px;
+  --space-n5: -20px;
+
   --size: 1rem;
   --size-10: 0.625rem;
   --size-15: 0.9375rem;
@@ -22,8 +29,26 @@ html {
   --size-100: 6.25rem;
   --size-120: 7.5rem;
 
+  --size-n: -1rem;
+  --size-n10: -0.625rem;
+  --size-n15: -0.9375rem;
+  --size-n20: -1.25rem;
+  --size-n25: -1.5625rem;
+  --size-n30: -1.875rem;
+  --size-n40: -2.5rem;
+  --size-n60: -3.75rem;
+  --size-n80: -5rem;
+  --size-n100: -6.25rem;
+  --size-n120: -7.5rem;
+
   --font-size-base: 1rem;
   --font-size-small: 80%;
+  --font-size-body-xsmall: 0.625rem;
+  --font-size-body-small: 0.75rem;
+  --font-size-body-text: 1rem;
+  --font-size-body-medium: 1.125rem;
+  --font-size-body-large: 1.25rem;
+  --font-size-body-xlarge: 1.5rem;
 
   --font-weight-base: 600;
   --font-weight-light: 400;
@@ -55,8 +80,21 @@ html {
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
 
   --transition-duration-base: 200ms;
-  --transition-duration-fast: 100ms;
+  --transition-duration-fast: 125ms;
   --transition-duration-slow: 350ms;
+
+  --zindex-dropdown:             1000;
+  --zindex-sticky:               1200;
+  --zindex-fixed:                1300;
+  --zindex-modal-backdrop:       2000;
+  --zindex-modal:                2200;
+  --zindex-popover:              3000;
+  --zindex-tooltip:              4000;
+
+  --btn-height: 3.5rem;
+  --btn-height-small: 2.5rem;
+  --btn-font-size: 1rem;
+  --btn-font-size-small: 0.9rem;
 
   --c-primary: #000000;
   --c-secondary: rgb(0, 85, 255);
@@ -83,30 +121,25 @@ html {
   --brand-background-secondary: rgba(255, 255, 255, 0.95);
   --general-background-a: #f9f9f9;
   --general-background-b: #f1f1f1;
-  --general-background-c: #e9e9e9;
+  --general-background-c: #eeeeee;
   --text-primary: #0d0d0d;
-  --text-primary-inverse: #fff;
+  --text-primary-inverse: #ffffff;
   --text-secondary: #606060;
   --text-disabled: #909090;
 
-  --zindex-dropdown:             1000;
-  --zindex-sticky:               1200;
-  --zindex-fixed:                1300;
-  --zindex-modal-backdrop:       2000;
-  --zindex-modal:                2200;
-  --zindex-popover:              3000;
-  --zindex-tooltip:              4000;
-
   // colors
   --c-btn: transparent;
-  --c-btn-border: rgba(0,0,0,0.2);
-  --c-btn-hover: rgba(0,0,0,0.1);
-  --c-btn-selected: #999999;
+  --c-btn-border: rgba(0,0,0,0.25);
+  --c-btn-hover: rgba(0,0,0,0.025);
+  --c-btn-selected: rgba(0,0,0,0.2);
   --c-btn-selected-hover: rgba(0,0,0,0.1);
-  --c-btn-focus-outline: rgba(0,0,0,0.05);
+  --c-btn-focus-outline: rgba(0,0,0,0.1);
   --c-btn-focus-border: rgba(0,0,0,0.3);
 
   --c-border: rgba(0,0,0,0.2);
+
+  --shadow-base: 0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1);
+  --shadow-long: 0 2px 4px rgba(0,0,0,0.1), 0 15px 40px rgba(0,0,0,0.2);
 }
 
 html[dark] {
@@ -116,7 +149,7 @@ html[dark] {
   --general-background-a: #1f1f1f;
   --general-background-b: #161616;
   --general-background-c: #0d0d0d;
-  --text-primary: #fff;
+  --text-primary: #eeeeee;
   --text-primary-inverse: #0d0d0d;
   --text-secondary: #aaa;
   --text-disabled: #717171;
@@ -126,12 +159,12 @@ html[dark] {
   --c-secondary-active: rgb(51, 106, 216);
 
   --c-btn: transparent;
-  --c-btn-border: #565656;
-  --c-btn-hover: #565656;
-  --c-btn-selected: #565656;
-  --c-btn-selected-hover: #565656;
+  --c-btn-border: #555555;
+  --c-btn-hover: #252525;
+  --c-btn-selected: #555555;
+  --c-btn-selected-hover: #555555;
   --c-btn-focus-outline: rgba(255,255,255,0.1);
-  --c-btn-focus-border: rgba(255,255,255,0.5);
+  --c-btn-focus-border: rgba(255,255,255,0.35);
 
   --c-border: #333333;
 }
@@ -146,3 +179,45 @@ html[dark] {
 
 // Utility
 @import 'utility/_space.scss';
+
+.vfade-enter-active,
+.vfade-leave-active {
+  will-change: opacity;
+}
+
+.vfade-enter-to,
+.vfade-leave {
+  opacity: 1;
+  transition: opacity var(--transition-duration-base) var(--ease-out);
+}
+
+.vfade-enter,
+.vfade-leave-to {
+  opacity: 0;
+  transition: opacity var(--transition-duration-base) var(--ease-out);
+}
+
+.vscale-enter-active,
+.vscale-leave-active {
+  will-change: opacity, transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.vscale-enter-to,
+.vscale-leave {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    transform var(--transition-duration-base) var(--ease-out),
+    opacity var(--transition-duration-base) var(--ease-out);
+}
+
+.vscale-enter,
+.vscale-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+  transition:
+    transform var(--transition-duration-base) var(--ease-out),
+    opacity var(--transition-duration-fast) var(--ease-out);
+}
